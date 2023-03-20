@@ -1,0 +1,34 @@
+Assets:
+- Character cards (x21)
+- Favor tokens
+
+Setup:
+- Shuffle the character cards to create the deck (will need to work out how many of each, may differ by num of players)
+- Set aside one card from deck (discarded to stop card counting - should not be visible to players)
+- Deal each player one card as their starting hand
+- Randomise starting player
+
+Gameplay - player turn:
+- Draw one card from deck
+- Player chooses which of the two cards to play, and resolves effect
+---> This may affect other players' hands, status in the round, etc.
+- The played card goes to the played pile (according to the official rules, it actually stays faceup in your play area)
+- All played and discarded cards should be visible to everyone (but might be good to implement an option to hide this, to make it harder)
+- Differentiate between playing and discarding a card - similar mechanic with different effects
+
+Round end:
+- If no cards remain in deck:
+---> After every turn, check if the deck is empty - all players still in round reveal and compare the card in their hands
+---> Highest card wins the round. If there is a tie, all players win the round and gain a token each
+
+- When only one player is left in round
+---> Check remaining players every time a player is knocked out
+---> When round ends, determine the winner and award them a favor token
+
+- The next round starts with the winner of the previous round - if there's a tie, decide randomly between tied players
+
+Game end:
+- When a round ends, and favor token(s) have been handed out, check if the game should end
+- Num of tokens to win is different depending on num of players - can implement later
+
+

@@ -1,0 +1,19 @@
+{
+  "name": "love-letter",
+  "version": "1.0.0",
+  "description": "Implementation of the Love Letter card game using boardgame.io framework",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "parcel index.html --open"
+  },
+  "browserslist": "defaults and supports async-functions",
+  "author": "rosie-i",
+  "license": "ISC",
+  "dependencies": {
+    "boardgame.io": "^0.50.2"
+  },
+  "devDependencies": {
+    "parcel-bundler": "^1.12.5"
+  }
+}
