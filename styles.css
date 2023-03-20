@@ -15,12 +15,28 @@ body {
 
 }
 
+.playerBox {
+    background-color: aliceblue;
+    color: black;
+    /* width: 500px; */
+    border: 5px solid black;
+}
+
 .drawPile {
     background-color: rgb(40, 255, 183);
 }
 
 .discardPile {
     background-color: rgb(180, 255, 40);
+
+}
+
+.discardPileList {
+
+}
+
+.playedPile {
+    background-color: rgb(255, 191, 40);
 
 }
 

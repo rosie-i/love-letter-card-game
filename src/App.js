@@ -28,9 +28,8 @@ class LoveLetterClient {
 
 
     update(state){
-        // TO BE IMPLEMENTED
-        console.log(state);
-        this.log("Game state updateddd");
+        // Update UI
+        this.board.stateUpdate(state);
     }
 
     // Log in game log section, for convenience while implementing game mechanics
