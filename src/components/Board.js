@@ -2,7 +2,7 @@ import { CARD_INFO } from "../CardInfo";
 
 
 class Board {
-    constructor(client){
+    constructor(client) {
 
         this.client = client;
         this.playArea = document.getElementById('play-area');
@@ -11,7 +11,7 @@ class Board {
 
     }
 
-    createBoard(){
+    createBoard() {
         // Create a text box showing info about each of the players' hands, points, etc
         // And discard pile and deck
         let playersDiv = document.createElement("div");
@@ -46,7 +46,7 @@ class Board {
         let playCard1Btn = document.createElement("button");
         let playCard2Btn = document.createElement("button");
         let endTurnBtn = document.createElement("button");
-        
+
         drawCardBtn.classList.add("drawCardBtn");
         playCard1Btn.classList.add("playCard1Btn");
         playCard2Btn.classList.add("playCard2Btn");
@@ -66,14 +66,14 @@ class Board {
         this.playCard1Btn = playCard1Btn;
         this.playCard2Btn = playCard2Btn;
         this.endTurnBtn = endTurnBtn;
-        
+
 
         this.playArea.append(playerActionDiv);
 
     }
 
 
-    attachListeners(){
+    attachListeners() {
 
         const handlePlayCard = event => {
             // Card val = whatever is on the btn
@@ -88,10 +88,10 @@ class Board {
         // this.endTurnBtn.addEventListener("click", moves.endTurn);
     }
 
-    stateUpdate(state){
+    stateUpdate(state) {
         let playerBoxesDoNotExist = !this.playersDiv.getElementsByClassName("playerBox").length;
-        if(playerBoxesDoNotExist){
-            createPlayerInfo(state,this);
+        if (playerBoxesDoNotExist) {
+            createPlayerInfo(state, this);
         } else {
             rerenderPlayerInfo(state, this);
         }
@@ -103,7 +103,7 @@ class Board {
 
 }
 
-function createPlayerInfo(state,board){
+function createPlayerInfo(state, board) {
     let playerMap = state.G.playerMap;
 
     let currentTurnDiv = document.createElement("div");
@@ -112,7 +112,7 @@ function createPlayerInfo(state,board){
 
     currentTurnDiv.textContent = "CURRENT TURN: Player " + state.ctx.currentPlayer;
 
-    for (const player in playerMap){
+    for (const player in playerMap) {
         let div = document.createElement("div");
         let className = "player" + player + "Div";
         div.classList.add(className);
@@ -127,12 +127,12 @@ function createPlayerInfo(state,board){
     rerenderPlayerInfo(state, board);
 }
 
-function rerenderPlayerInfo(state, board){
+function rerenderPlayerInfo(state, board) {
 
     let playerMap = state.G.playerMap;
     board.currentTurnDiv.textContent = "CURRENT TURN: Player " + state.ctx.currentPlayer;
 
-    for (const player in playerMap){
+    for (const player in playerMap) {
         let className = "player" + player + "Div";
         let div = board.playersDiv.getElementsByClassName(className)[0];
         div.textContent = `Player ID: ${player} \r\n`;
@@ -141,7 +141,7 @@ function rerenderPlayerInfo(state, board){
         div.textContent += `Current hand: \r\n`;
         let hand = playerMap[player].hand;
         div.textContent += `🃏 ${hand[0].val}: ${hand[0].name} \r\n`;
-        if (hand[1]){
+        if (hand[1]) {
             div.textContent += `🃏 ${hand[1].val}: ${hand[1].name} \r\n`;
         }
 
@@ -155,11 +155,11 @@ function rerenderPlayerInfo(state, board){
     // Round status - active vs knocked out
 
     // Also state who's turn it currently is
-    
+
 }
 
 
-function rerenderCardPilesInfo(state, board){
+function rerenderCardPilesInfo(state, board) {
 
     // RENDER DRAW PILE COUNT
     let drawPile = state.G.drawPile;
@@ -201,14 +201,14 @@ function rerenderCardPilesInfo(state, board){
 
 }
 
-function rerenderCardButtons (state, board){
+function rerenderCardButtons(state, board) {
     let playerID = board.client.playerID;
     let hand = state.G.playerMap[playerID].hand;
 
     // Rerender the btns to whatever they have in their hand
     board.playCard1Btn.innerText = "Play - " + `${hand[0].val}: ${hand[0].name}`;
     board.playCard1Btn.cardVal = hand[0].val;
-    if (hand[1]){
+    if (hand[1]) {
         board.playCard2Btn.classList.remove("hide");
         board.playCard2Btn.innerText = "Play - " + `${hand[1].val}: ${hand[1].name}`;
         board.playCard2Btn.cardVal = hand[1].val;

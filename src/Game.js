@@ -54,13 +54,13 @@ export const LoveLetter = {
             // }
             // If hand size is less than two, can draw
             let player = G.playerMap[ctx.currentPlayer];
-            if (player.hand.length < 2){
-                moves.push({move: 'drawCard'});
-            } 
+            if (player.hand.length < 2) {
+                moves.push({ move: 'drawCard' });
+            }
             // If hand size is two, can play one of the two cards
-            else if (player.hand.length === 2){
-                moves.push({move: 'playCard', args: player.hand[0].val});
-                moves.push({move: 'playCard', args: player.hand[1].val});
+            else if (player.hand.length === 2) {
+                moves.push({ move: 'playCard', args: player.hand[0].val });
+                moves.push({ move: 'playCard', args: player.hand[1].val });
             }
 
             return moves;
@@ -175,7 +175,4 @@ function playCard(obj, cardNum) {
     G.playedPile.push(playedCard);
 
 }
-
-
-
 

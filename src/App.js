@@ -5,7 +5,7 @@ import { SocketIO } from 'boardgame.io/multiplayer'
 
 class LoveLetterClient {
     constructor(rootEl, { playerID }) {
-        this.client = Client({ 
+        this.client = Client({
             game: LoveLetter,
             numPlayers: 3,
             multiplayer: SocketIO({ server: 'localhost:8000' }),
@@ -15,7 +15,7 @@ class LoveLetterClient {
 
         this.rootEl = rootEl;
         this.gameLog = document.getElementById('game-log');
-        
+
         this.log("Welcome to Love Letter");
 
         this.createBoard();
@@ -25,7 +25,7 @@ class LoveLetterClient {
     }
 
     // Creates the UI
-    createBoard(){
+    createBoard() {
         this.log("Creating board");
 
         let board = new Board(this.client);
@@ -33,11 +33,11 @@ class LoveLetterClient {
     }
 
 
-    update(state){
+    update(state) {
 
         // When using a remote master, the client won’t know the game state when it first runs, 
         // so update will be called first with null, then with the full game state after it connects to the server.
-        if (state === null){
+        if (state === null) {
             this.log("Connecting to server...");
             return;
         }
@@ -47,7 +47,7 @@ class LoveLetterClient {
         if (state.ctx.gameover) {
             this.log("GAME OVER!!!");
         }
-      
+
     }
 
     // Log in game log section, for convenience while implementing game mechanics
