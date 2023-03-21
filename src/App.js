@@ -30,6 +30,10 @@ class LoveLetterClient {
     update(state){
         // Update UI
         this.board.stateUpdate(state);
+        if (state.ctx.gameover) {
+            this.log("GAME OVER!!!");
+        }
+      
     }
 
     // Log in game log section, for convenience while implementing game mechanics

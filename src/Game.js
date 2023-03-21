@@ -28,7 +28,7 @@ export const LoveLetter = {
 
     turn: { minMoves: 1, maxMoves: 2 },
 
-    moves: {playCard, drawCard},
+    moves: { playCard, drawCard },
 
     minPlayers: 3,
 
@@ -41,6 +41,29 @@ export const LoveLetter = {
         // This will actually currently not allow the last player to play their final card either
         if (G.drawPile.length <= 0) {
             return { drawPileEmpty: true };
+        }
+    },
+
+    ai: {
+        enumerate: (G, ctx) => {
+            let moves = [];
+            // for (let i = 0; i < 9; i++) {
+            //     if (G.cells[i] === null) {
+            //         moves.push({ move: 'clickCell', args: [i] });
+            //     }
+            // }
+            // If hand size is less than two, can draw
+            let player = G.playerMap[ctx.currentPlayer];
+            if (player.hand.length < 2){
+                moves.push({move: 'drawCard'});
+            } 
+            // If hand size is two, can play one of the two cards
+            else if (player.hand.length === 2){
+                moves.push({move: 'playCard', args: player.hand[0].val});
+                moves.push({move: 'playCard', args: player.hand[1].val});
+            }
+
+            return moves;
         }
     }
 
@@ -68,7 +91,7 @@ function makeDeck() {
 
 }
 
-function makePlayerMap(ctx){
+function makePlayerMap(ctx) {
 
     let playerMap = {};
 
@@ -76,7 +99,7 @@ function makePlayerMap(ctx){
     for (let i = 0; i < ctx.playOrder.length; i++) {
         let playerID = ctx.playOrder[i];
 
-        if (playerMap[playerID]){
+        if (playerMap[playerID]) {
             throw new Error("Player ID already exists in player map!");
         }
 
@@ -93,9 +116,9 @@ function makePlayerMap(ctx){
 
 }
 
-function dealStartingHands(playerMap, drawPile){
-    
-    for (const playerID in playerMap){
+function dealStartingHands(playerMap, drawPile) {
+
+    for (const playerID in playerMap) {
         let card = drawPile.pop();
         playerMap[playerID].hand.push(card);
     }
@@ -106,8 +129,8 @@ function dealStartingHands(playerMap, drawPile){
 
 // -------------- GAME MOVE HELPER FUNCTIONS ---------------
 
-function drawCard({G, playerID}) {
-    if(G.drawPile.length <= 0){
+function drawCard({ G, playerID }) {
+    if (G.drawPile.length <= 0) {
         console.log("INVALID MOVE: Draw pile is already empty, cannot draw card!");
         return INVALID_MOVE;
     }
@@ -115,7 +138,7 @@ function drawCard({G, playerID}) {
     let hand = G.playerMap[playerID].hand;
 
     // NOTE - if you implement the V2 chancellor card at any point, you will have to edit this!
-    if(hand.length > 1){
+    if (hand.length > 1) {
         console.log("INVALID MOVE: Player hand size is already at maximum!");
         return INVALID_MOVE;
     }
@@ -124,25 +147,32 @@ function drawCard({G, playerID}) {
     hand.push(drawn);
 }
 
-function playCard ({ G, playerID }, cardNum) {
-    
+function playCard({ G, playerID }, cardNum) {
+
     let hand = G.playerMap[playerID].hand;
     // Get values of cards in hand
     let handVals = [hand[0].val];
-    if (hand[1]){
+    if (hand[1]) {
         handVals.push(hand[1].val);
     }
 
     // Ask player which card to play - will obvi change how this is selected at some point
     let cardVal;
     do {
+        // CURRENTLY ONLY USED BY THE AI, BUT WILL BE USED BY PLAYERS LATER 
+        if(cardNum){
+            cardVal = cardNum;
+            break;
+        }
+
+        
         cardVal = prompt("Which card from your hand do you want to play? (Input only the card value, not the name)");
-        if (cardVal === null){
+        if (cardVal === null) {
             console.log("INVALID MOVE: Did not specify card to play");
             return INVALID_MOVE;
         }
         else {
-            cardVal = parseInt(cardVal),10;
+            cardVal = parseInt(cardVal), 10;
 
         }
     } while (!handVals.includes(cardVal));
@@ -150,7 +180,7 @@ function playCard ({ G, playerID }, cardNum) {
 
     // Remove selected card from their hand
     let playedCard;
-    if (hand[1].val === cardVal){
+    if (hand[1].val === cardVal) {
         playedCard = hand.pop();
     } else {
         playedCard = hand.shift();
