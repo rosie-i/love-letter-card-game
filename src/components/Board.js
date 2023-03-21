@@ -6,6 +6,7 @@ class Board {
 
         this.client = client;
         this.playArea = document.getElementById('play-area');
+        this.gameLog = document.getElementById('game-log');
         this.createBoard();
         this.attachListeners();
 
@@ -72,7 +73,6 @@ class Board {
 
     }
 
-
     attachListeners() {
 
         const handlePlayCard = event => {
@@ -91,6 +91,7 @@ class Board {
     stateUpdate(state) {
         let playerBoxesDoNotExist = !this.playersDiv.getElementsByClassName("playerBox").length;
         if (playerBoxesDoNotExist) {
+            // It feels like I should just move this into createBoard(), no reason not to
             createPlayerInfo(state, this);
         } else {
             rerenderPlayerInfo(state, this);
@@ -99,6 +100,13 @@ class Board {
         rerenderCardPilesInfo(state, this);
 
         rerenderCardButtons(state, this);
+    }
+
+    // Log in game log section, for convenience while implementing game mechanics
+    addGameLogMsg(text) {
+        let item = document.createElement("ul");
+        item.textContent = text;
+        this.gameLog.append(item);
     }
 
 }
@@ -209,12 +217,12 @@ function rerenderCardButtons(state, board) {
     board.playCard1Btn.innerText = "Play - " + `${hand[0].val}: ${hand[0].name}`;
     board.playCard1Btn.cardVal = hand[0].val;
     if (hand[1]) {
-        board.playCard2Btn.classList.remove("hide");
+        board.playCard2Btn.classList.remove("hidden");
         board.playCard2Btn.innerText = "Play - " + `${hand[1].val}: ${hand[1].name}`;
         board.playCard2Btn.cardVal = hand[1].val;
 
     } else {
-        board.playCard2Btn.classList.add("hide");
+        board.playCard2Btn.classList.add("hidden");
         board.playCard2Btn.cardVal = null;
     }
 }

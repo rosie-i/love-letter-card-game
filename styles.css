@@ -6,7 +6,7 @@ body {
 
 .box {
     background-color: rgb(34, 34, 34);
-    width: 50%;
+    width: 90%;
     margin-top: 10px;
 }
 
@@ -45,6 +45,6 @@ body {
 
 }
 
-.hide{
+.hidden{
     display: none;
 }

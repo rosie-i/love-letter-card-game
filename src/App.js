@@ -1,33 +1,78 @@
 import { Client } from 'boardgame.io/client';
 import { LoveLetter } from './Game';
 import Board from './components/Board';
-import { SocketIO } from 'boardgame.io/multiplayer'
+import { SocketIO } from 'boardgame.io/multiplayer';
+
 
 class LoveLetterClient {
-    constructor(rootEl, { playerID }) {
+    constructor(appElement, data) {
         this.client = Client({
             game: LoveLetter,
             numPlayers: 3,
             multiplayer: SocketIO({ server: 'localhost:8000' }),
-            playerID: playerID
+            matchID: data.matchID,
+            playerID: data.playerID
         });
+
+        this.connected = false;
         this.client.start();
+        this.appElement = appElement;
+        this.gameLobbyElement = document.getElementById("gameLobby");
+        this.connectingScreenElement = document.getElementById("connectingScreen");
+        this.gameplayViewElement = document.getElementById("gameplayView");
 
-        this.rootEl = rootEl;
-        this.gameLog = document.getElementById('game-log');
-
-        this.log("Welcome to Love Letter");
-
-        this.createBoard();
+        this.layouts = {
+            lobby: this.gameLobbyElement,
+            connecting: this.connectingScreenElement,
+            gameplay: this.gameplayViewElement
+        };
 
         this.client.subscribe(state => this.update(state));
 
     }
 
+    onConnecting() {
+        this.connected = false;
+        this.showLayout("connecting");
+    }
+
+    onConnected() {
+        this.connected = true;
+
+        // Create board
+        this.createBoard();
+
+        // Then show the gameplay view
+        this.showLayout("gameplay");
+
+    }
+
+
+    // ACCEPTS lobby, connecting, gameplay
+    showLayout(layoutName){
+
+        let newLayoutShown = false;
+        
+        for (const layout in this.layouts){
+            if (layoutName === layout){
+                this.layouts[layout].classList.remove("hidden");
+                newLayoutShown = true;
+            } else {
+                this.layouts[layout].classList.add("hidden");
+            }
+        }
+
+        if (!newLayoutShown){
+            throw new Error ("Hey roro, you didn't put a correct layout name in probs!");
+        }
+
+    }
+
+
+
+
     // Creates the UI
     createBoard() {
-        this.log("Creating board");
-
         let board = new Board(this.client);
         this.board = board;
     }
@@ -38,32 +83,63 @@ class LoveLetterClient {
         // When using a remote master, the client won’t know the game state when it first runs, 
         // so update will be called first with null, then with the full game state after it connects to the server.
         if (state === null) {
-            this.log("Connecting to server...");
+            this.onConnecting();
             return;
+        } else if (!this.connected) {
+            this.onConnected();
         }
 
         // Update UI
         this.board.stateUpdate(state);
+
         if (state.ctx.gameover) {
-            this.log("GAME OVER!!!");
+            this.board.addGameLogMsg("GAME OVER!!!");
         }
 
-    }
-
-    // Log in game log section, for convenience while implementing game mechanics
-    log(text) {
-        let item = document.createElement("ul");
-        item.textContent = text;
-        this.gameLog.append(item);
     }
 
 }
 
 
+class App {
+    constructor(appElement) {
+
+        // Game Lobby listeners will then create new client when someone joins game
+        this.attachGameLobbyListeners();
+        this.appElement = appElement;
+
+    }
+
+    attachGameLobbyListeners() {
+
+        // NEW GAME - TO BE IMPLEMENTED
+        // We will want to get the game id + num of players
+        let newGameForm = document.getElementById("createNewGameForm");
+        newGameForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            alert("Sorry, I don't work yet, try using default game ID and joining existing game");
+        });
+
+
+
+        // JOIN EXISTING GAME
+        let joinGameForm = document.getElementById("joinExistingGameForm");
+        joinGameForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+
+            let gameToJoinID = document.getElementById("existing-game-id-input").value;
+            let userID = document.getElementById("player-id-input-existing-game").value;
+
+            let data = {
+                matchID: gameToJoinID,
+                playerID: userID
+            };
+
+            this.client = new LoveLetterClient(this.appElement, data);
+        });
+
+    }
+}
+
 const appElement = document.getElementById('app');
-const playerIDs = ['0', '1', '2'];
-const clients = playerIDs.map(playerID => {
-    const rootElement = document.createElement('div');
-    appElement.append(rootElement);
-    return new LoveLetterClient(rootElement, { playerID });
-});
+new App(appElement);

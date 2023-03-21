@@ -9,12 +9,61 @@
 
 <body>
     <div id="app">
-        <header>LOVE LETTER</header>
-        <div id="play-area" class="box">
-            PLAY AREA
+        <h1>LOVE LETTER</h1>
+
+        <div id="gameLobby">
+
+            <div class="joinExisting">
+
+                <h2>Join an Existing Game:</h2>
+                <form id="joinExistingGameForm">
+                    <label for="player-id-input-existing-game">Player ID:</label>
+                    <input type="text" id="player-id-input-existing-game" name="player-id-input-existing-game"
+                        placeholder="Your username">
+                    <label for="existing-game-id-input">Enter existing game ID:</label>
+                    <input type="text" id="existing-game-id-input" name="existing-game-id-input" value="test-game-id">
+                    <input type="submit" value="Join">
+                </form>
+            </div>
+
+            <div class="createNewGameDiv">
+                <h2>Create a New Game</h2>
+                <form id="createNewGameForm">
+                    <label for="player-id-input-create-game">Player ID:</label>
+                    <input type="text" id="player-id-input-create-game" name="player-id-input-create-game"
+                        placeholder="Your username">
+
+                    <label for="new-game-id-input">Enter custom game ID:</label>
+                    <input type="text" id="new-game-id-input" name="new-game-id-input">
+
+                    <label for="num-players">Number of Players:</label>
+                    <select id="num-players" name="num-players">
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                    </select>
+
+                    <input type="submit" value="Create Game">
+                </form>
+            </div>
         </div>
-        <div id="game-log" class="box">
-            GAME LOG
+
+
+        <div id="connectingScreen" class="hidden">
+            Connecting you to the server...
+        </div>
+
+        <div id="gameplayView" class="hidden">
+
+            <header>LOVE LETTER</header>
+            <div id="play-area" class="box">
+                PLAY AREA
+            </div>
+            <div id="game-log" class="box">
+                GAME LOG
+            </div>
         </div>
 
     </div>
