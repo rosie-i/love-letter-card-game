@@ -44,3 +44,7 @@ body {
     background-color: rgb(177, 123, 219);
 
 }
+
+.hide{
+    display: none;
+}

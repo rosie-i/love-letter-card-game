@@ -129,7 +129,11 @@ function dealStartingHands(playerMap, drawPile) {
 
 // -------------- GAME MOVE HELPER FUNCTIONS ---------------
 
-function drawCard({ G, playerID }) {
+function drawCard(obj, something) {
+
+    let G = obj.G;
+    let playerID = obj.playerID;
+
     if (G.drawPile.length <= 0) {
         console.log("INVALID MOVE: Draw pile is already empty, cannot draw card!");
         return INVALID_MOVE;
@@ -147,7 +151,10 @@ function drawCard({ G, playerID }) {
     hand.push(drawn);
 }
 
-function playCard({ G, playerID }, cardNum) {
+function playCard(obj, cardNum) {
+
+    let G = obj.G;
+    let playerID = obj.playerID;
 
     let hand = G.playerMap[playerID].hand;
     // Get values of cards in hand
@@ -156,31 +163,9 @@ function playCard({ G, playerID }, cardNum) {
         handVals.push(hand[1].val);
     }
 
-    // Ask player which card to play - will obvi change how this is selected at some point
-    let cardVal;
-    do {
-        // CURRENTLY ONLY USED BY THE AI, BUT WILL BE USED BY PLAYERS LATER 
-        if(cardNum){
-            cardVal = cardNum;
-            break;
-        }
-
-        
-        cardVal = prompt("Which card from your hand do you want to play? (Input only the card value, not the name)");
-        if (cardVal === null) {
-            console.log("INVALID MOVE: Did not specify card to play");
-            return INVALID_MOVE;
-        }
-        else {
-            cardVal = parseInt(cardVal), 10;
-
-        }
-    } while (!handVals.includes(cardVal));
-
-
     // Remove selected card from their hand
     let playedCard;
-    if (hand[1].val === cardVal) {
+    if (hand[1].val === cardNum) {
         playedCard = hand.pop();
     } else {
         playedCard = hand.shift();

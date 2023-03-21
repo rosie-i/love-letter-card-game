@@ -43,23 +43,28 @@ class Board {
         playerActionDiv.textContent = "Player actions:";
 
         let drawCardBtn = document.createElement("button");
-        let playCardBtn = document.createElement("button");
+        let playCard1Btn = document.createElement("button");
+        let playCard2Btn = document.createElement("button");
         let endTurnBtn = document.createElement("button");
-
+        
         drawCardBtn.classList.add("drawCardBtn");
-        playCardBtn.classList.add("playCardBtn");
+        playCard1Btn.classList.add("playCard1Btn");
+        playCard2Btn.classList.add("playCard2Btn");
         endTurnBtn.classList.add("endTurnBtn");
 
         drawCardBtn.innerText = "Draw Card";
-        playCardBtn.innerText = "Play Card";
+        playCard1Btn.innerText = "Play Card 1";
+        playCard2Btn.innerText = "Play Card 2";
         endTurnBtn.innerText = "End Turn";
 
         playerActionDiv.append(drawCardBtn);
-        playerActionDiv.append(playCardBtn);
+        playerActionDiv.append(playCard1Btn);
+        playerActionDiv.append(playCard2Btn);
         playerActionDiv.append(endTurnBtn);
 
         this.drawCardBtn = drawCardBtn;
-        this.playCardBtn = playCardBtn;
+        this.playCard1Btn = playCard1Btn;
+        this.playCard2Btn = playCard2Btn;
         this.endTurnBtn = endTurnBtn;
         
 
@@ -69,9 +74,17 @@ class Board {
 
 
     attachListeners(){
+
+        const handlePlayCard = event => {
+            // Card val = whatever is on the btn
+            let cardVal = event.target.cardVal;
+            this.client.moves.playCard(cardVal);
+        };
+
         let moves = this.client.moves;
         this.drawCardBtn.addEventListener("click", moves.drawCard);
-        this.playCardBtn.addEventListener("click", moves.playCard);
+        this.playCard1Btn.addEventListener("click", handlePlayCard);
+        this.playCard2Btn.addEventListener("click", handlePlayCard);
         // this.endTurnBtn.addEventListener("click", moves.endTurn);
     }
 
@@ -84,6 +97,8 @@ class Board {
         }
 
         rerenderCardPilesInfo(state, this);
+
+        rerenderCardButtons(state, this);
     }
 
 }
@@ -186,6 +201,23 @@ function rerenderCardPilesInfo(state, board){
 
 }
 
+function rerenderCardButtons (state, board){
+    let playerID = board.client.playerID;
+    let hand = state.G.playerMap[playerID].hand;
+
+    // Rerender the btns to whatever they have in their hand
+    board.playCard1Btn.innerText = "Play - " + `${hand[0].val}: ${hand[0].name}`;
+    board.playCard1Btn.cardVal = hand[0].val;
+    if (hand[1]){
+        board.playCard2Btn.classList.remove("hide");
+        board.playCard2Btn.innerText = "Play - " + `${hand[1].val}: ${hand[1].name}`;
+        board.playCard2Btn.cardVal = hand[1].val;
+
+    } else {
+        board.playCard2Btn.classList.add("hide");
+        board.playCard2Btn.cardVal = null;
+    }
+}
 
 
 export default Board;

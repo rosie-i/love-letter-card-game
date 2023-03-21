@@ -1,10 +1,16 @@
 import { Client } from 'boardgame.io/client';
 import { LoveLetter } from './Game';
 import Board from './components/Board';
+import { SocketIO } from 'boardgame.io/multiplayer'
 
 class LoveLetterClient {
-    constructor(rootEl) {
-        this.client = Client({ game: LoveLetter });
+    constructor(rootEl, { playerID }) {
+        this.client = Client({ 
+            game: LoveLetter,
+            numPlayers: 3,
+            multiplayer: SocketIO({ server: 'localhost:8000' }),
+            playerID: playerID
+        });
         this.client.start();
 
         this.rootEl = rootEl;
@@ -28,6 +34,14 @@ class LoveLetterClient {
 
 
     update(state){
+
+        // When using a remote master, the client won’t know the game state when it first runs, 
+        // so update will be called first with null, then with the full game state after it connects to the server.
+        if (state === null){
+            this.log("Connecting to server...");
+            return;
+        }
+
         // Update UI
         this.board.stateUpdate(state);
         if (state.ctx.gameover) {
@@ -45,5 +59,11 @@ class LoveLetterClient {
 
 }
 
+
 const appElement = document.getElementById('app');
-const app = new LoveLetterClient(appElement);
+const playerIDs = ['0', '1', '2'];
+const clients = playerIDs.map(playerID => {
+    const rootElement = document.createElement('div');
+    appElement.append(rootElement);
+    return new LoveLetterClient(rootElement, { playerID });
+});
