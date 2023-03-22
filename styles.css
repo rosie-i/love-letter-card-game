@@ -2,13 +2,62 @@ body {
     background-color: rgb(151, 0, 30);
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     color: rgb(255, 255, 255);
+    margin: 0;
 }
 
-.box {
-    background-color: rgb(34, 34, 34);
-    width: 90%;
-    margin-top: 10px;
+html,
+body,
+.fullscreen {
+	height: 100%;
 }
+
+
+
+/* --------------- GAMEPLAY VIEW LAYOUT --------------- */
+#gameplayView {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(4, 1fr) 2fr;
+    grid-column-gap: 0px;
+    grid-row-gap: 0px;
+    height: 100%;
+}
+
+.gameplay-opponentInfoContainer {
+    grid-area: 1 / 1 / 2 / 5;
+    background-color: blue;
+
+}
+
+.gameplay-cardPilesAreaContainer {
+    grid-area: 2 / 1 / 5 / 5;
+    background-color: orange;
+
+}
+
+.gameplay-playerHandAndInfoContainer {
+    grid-area: 5 / 1 / 6 / 5;
+    background-color: yellow;
+
+}
+
+.gameplay-gameLogContainer {
+    grid-area: 1 / 5 / 4 / 6;
+    background-color: red;
+
+}
+
+.gameplay-chatContainer {
+    grid-area: 4 / 5 / 6 / 6;
+    background-color: mediumseagreen;
+
+}
+
+
+
+
+
+
 
 .players {
     background-color: rgb(40, 165, 255);
@@ -40,11 +89,29 @@ body {
 
 }
 
-.playerActionDiv{
+.playerActionDiv {
     background-color: rgb(177, 123, 219);
 
 }
 
-.hidden{
+
+
+/* This is probably not specific enough a selector to be reliably useful! */
+.hidden {
+    display: none;
+}
+
+
+/* These need to be more specific/given important indicator! */
+
+#gameLobby.hidden {
+    display: none;
+}
+
+#connectingScreen.hidden {
+    display: none;
+}
+
+#gameplayView.hidden {
     display: none;
 }

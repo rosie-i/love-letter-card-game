@@ -55,9 +55,9 @@ export const LoveLetter = {
 
             turn: {
                 // While this is true, will it end the turn as soon as move is made
-                // Without waiting for other stages?
-                minMoves: 1,
-                maxMoves:1,
+                // Without waiting for other stages? - And also I can't end turn of ppl who are knocked out
+                // minMoves: 1,
+                // maxMoves:1,
 
                 // BEGIN HOOK - RUNS EVERY TIME A NEW TURN BEGINS
                 onBegin: ({ G, ctx, events }) => {
@@ -67,22 +67,35 @@ export const LoveLetter = {
                     } else {
                         // Otherwise, draw card to start turn
                         drawCard({G, playerID: ctx.currentPlayer});
-                        events.setStage('playCard');
                     }
                 },
 
-                stages: {
-                    playCard: {
-                        // Players selects which card to play, remove it from their hand and put it on play pile
-                        next: 'chooseTarget'
-                    },
-                    chooseTarget: {
-                        // Not always required, depends on card played
-                    },
-                    resolveCardEffects: {
-                        // e.g. Reveal card, compare hands, knock players out, etc.
-                    }
-                }
+                // Ok, I don't think stages are very useful in this way
+                // Might be useful for moving players who are being 'attacked' into a phase where they can do something...
+                // Although they can't actually really do anything, like they don't have to make any decisions
+                // So probs not actually necessary
+                // stages: {
+                //     playCard: {
+                //         // Players selects which card to play, remove it from their hand and put it on play pile
+                //         onBegin: ({ G, ctx }) => {
+                //             console.log("xxx playcard onbegin");
+                //         },
+                //         next: 'chooseTarget'
+                //     },
+                //     chooseTarget: {
+                //         // Not always required, depends on card played
+                //         onBegin: ({ G, ctx }) => {
+                //             console.log("xxxxx choosetarget on begin");
+                //         },
+                //     },
+                //     resolveCardEffects: {
+                //         // e.g. Reveal card, compare hands, knock players out, etc.
+                //     }
+                // }
+
+
+
+
 
                 // IMPLEMENT ONEND HOOK - check if round should end (deck empty/only one player left in). 
                 // If not, carry on to next player's turn
@@ -132,11 +145,6 @@ export const LoveLetter = {
     ai: {
         enumerate: (G, ctx) => {
             let moves = [];
-            // for (let i = 0; i < 9; i++) {
-            //     if (G.cells[i] === null) {
-            //         moves.push({ move: 'clickCell', args: [i] });
-            //     }
-            // }
             // If hand size is less than two, can draw
             let player = G.playerMap[ctx.currentPlayer];
             if (player.hand.length < 2) {
@@ -198,7 +206,7 @@ function makePlayerMap(ctx) {
 
     return playerMap;
 
-
+    
 }
 
 function dealStartingHands(playerMap, drawPile) {
@@ -239,17 +247,21 @@ function drawCard({G, playerID}) {
     hand.push(drawn);
 }
 
+// Need to add targetted player parameter to see who the card is being played against
 function playCard(obj, cardNum) {
 
     let G = obj.G;
     let playerID = obj.playerID;
 
     let hand = G.playerMap[playerID].hand;
-    // Get values of cards in hand
-    let handVals = [hand[0].val];
-    if (hand[1]) {
-        handVals.push(hand[1].val);
-    }
+
+    // No longer needed? It was only to validate the move, but if you can only select one in your hand on screen then not necessarily required
+    // Though maybe handy to rtn invalid move anyway, just as a safeguard 
+    // // Get values of cards in hand
+    // let handVals = [hand[0].val];
+    // if (hand[1]) {
+    //     handVals.push(hand[1].val);
+    // }
 
     // Remove selected card from their hand
     let playedCard;
@@ -261,6 +273,8 @@ function playCard(obj, cardNum) {
 
     // Add to played pile
     G.playedPile.push(playedCard);
+
+    // IMPLEMENT - ACTION THE EFFECTS OF THE CARD
 
 }
 

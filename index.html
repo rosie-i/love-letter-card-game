@@ -8,10 +8,11 @@
 </head>
 
 <body>
-    <div id="app">
-        <h1>LOVE LETTER</h1>
-
+    <div id="app" class="fullscreen">
+        
+        <!-- <div id="gameLobby" class="hidden"> -->
         <div id="gameLobby">
+            <h1>LOVE LETTER</h1>
 
             <div class="joinExisting">
 
@@ -55,15 +56,24 @@
             Connecting you to the server...
         </div>
 
+        <!-- <div id="gameplayView"> -->
         <div id="gameplayView" class="hidden">
 
-            <header>LOVE LETTER</header>
-            <div id="play-area" class="box">
-                PLAY AREA
+            <div class="gameplay-opponentInfoContainer"> OPPONENT INFO </div>
+            <div class="gameplay-cardPilesAreaContainer"> CARD PILES
+                <div id="play-area">
+                    Play area div placeholder
+                </div>
             </div>
-            <div id="game-log" class="box">
-                GAME LOG
+            <div class="gameplay-playerHandAndInfoContainer"> PLAYER INFO: </div>
+            <div class="gameplay-gameLogContainer"> 
+                GAME LOG 
+                <div id="game-log">
+                    Game log placeholder
+                </div>
+
             </div>
+            <div class="gameplay-chatContainer"> CHAT </div>
         </div>
 
     </div>

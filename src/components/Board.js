@@ -5,6 +5,16 @@ class Board {
     constructor(client) {
 
         this.client = client;
+
+        this.container = document.getElementById('gameplayView');
+        this.opponentInfoContainer = this.container.getElementsByClassName("gameplay-opponentInfoContainer")[0];
+        this.cardPilesAreaContainer = this.container.getElementsByClassName("gameplay-cardPilesAreaContainer")[0];
+        this.playerHandAndInfoContainer = this.container.getElementsByClassName("gameplay-playerHandAndInfoContainer")[0];
+        this.gameLogContainer = this.container.getElementsByClassName("gameplay-gameLogContainer")[0];
+        this.chatContainer = this.container.getElementsByClassName("gameplay-chatContainer")[0];
+
+
+        // Might get rid of below
         this.playArea = document.getElementById('play-area');
         this.gameLog = document.getElementById('game-log');
         this.createBoard();
@@ -15,12 +25,17 @@ class Board {
     createBoard() {
         // Create a text box showing info about each of the players' hands, points, etc
         // And discard pile and deck
+        
         let playersDiv = document.createElement("div");
         playersDiv.classList.add("players");
         playersDiv.textContent = "This is where info about players will go";
+        // We'll leave players div in existence for now bc the updates rely on it, but will fix in a bit!
         this.playersDiv = playersDiv;
-        this.playArea.append(playersDiv);
+        this.opponentInfoContainer.append(playersDiv);
 
+
+
+        // THIS CAN STAY HERE FOR NOW BUT WILL PROBS GET RID OF PLAY-AREA IN FAVOUR OF gameplay-cardPilesAreaContainer
         let drawPileDiv = document.createElement("div");
         this.drawPileDiv = drawPileDiv;
         drawPileDiv.classList.add("drawPile");
@@ -39,6 +54,9 @@ class Board {
         playedPileDiv.textContent = "Played pile loading";
         this.playArea.append(playedPileDiv);
 
+
+
+        // PLAYER ACTION STUFF
         let playerActionDiv = document.createElement("div");
         playerActionDiv.classList.add("playerActionDiv");
         playerActionDiv.textContent = "Player actions:";
@@ -73,8 +91,7 @@ class Board {
         this.playCard2Btn = playCard2Btn;
         this.endTurnBtn = endTurnBtn;
 
-
-        this.playArea.append(playerActionDiv);
+        this.playerHandAndInfoContainer.append(playerActionDiv);
 
     }
 
@@ -116,6 +133,9 @@ class Board {
 
 }
 
+
+// Lotsa refactoring required here!
+// Moving all of this around/lots of editing
 function createPlayerInfo(state, board) {
     let playerMap = state.G.playerMap;
 
