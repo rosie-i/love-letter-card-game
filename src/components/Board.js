@@ -49,8 +49,13 @@ class Board {
         let endTurnBtn = document.createElement("button");
 
         drawCardBtn.classList.add("drawCardBtn");
+        // Hiding draw card button atm - auto-draws at start of your turn
+        // Only other occasion player would need draw card is Prince being played on them
+        drawCardBtn.classList.add("hidden");
         playCard1Btn.classList.add("playCard1Btn");
+        playCard1Btn.classList.add("hidden");
         playCard2Btn.classList.add("playCard2Btn");
+        playCard2Btn.classList.add("hidden");
         endTurnBtn.classList.add("endTurnBtn");
 
         drawCardBtn.innerText = "Draw Card";
@@ -148,7 +153,9 @@ function rerenderPlayerInfo(state, board) {
         div.textContent += `Knocked out: ${playerMap[player].knockedOutOfRound} \r\n`;
         div.textContent += `Current hand: \r\n`;
         let hand = playerMap[player].hand;
-        div.textContent += `🃏 ${hand[0].val}: ${hand[0].name} \r\n`;
+        if (hand[0]){
+            div.textContent += `🃏 ${hand[0].val}: ${hand[0].name} \r\n`;
+        }
         if (hand[1]) {
             div.textContent += `🃏 ${hand[1].val}: ${hand[1].name} \r\n`;
         }
@@ -214,8 +221,18 @@ function rerenderCardButtons(state, board) {
     let hand = state.G.playerMap[playerID].hand;
 
     // Rerender the btns to whatever they have in their hand
-    board.playCard1Btn.innerText = "Play - " + `${hand[0].val}: ${hand[0].name}`;
-    board.playCard1Btn.cardVal = hand[0].val;
+    // DW about this being a bit verbose, will be updating UI properly later, just testing mechanics with this atm
+    if (hand[0]) {
+        board.playCard1Btn.classList.remove("hidden");
+        board.playCard1Btn.innerText = "Play - " + `${hand[0].val}: ${hand[0].name}`;
+        board.playCard1Btn.cardVal = hand[0].val;
+
+    } else {
+        board.playCard2Btn.classList.add("hidden");
+        board.playCard2Btn.cardVal = null;
+    }
+
+
     if (hand[1]) {
         board.playCard2Btn.classList.remove("hidden");
         board.playCard2Btn.innerText = "Play - " + `${hand[1].val}: ${hand[1].name}`;

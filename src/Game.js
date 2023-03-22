@@ -4,18 +4,17 @@ import { INVALID_MOVE } from 'boardgame.io/core';
 
 export const LoveLetter = {
     // Set initial state of G
-    setup: ({ random, ctx }) => {
+    setup: ({ ctx }) => {
 
-        // Create card piles
-        let drawPile = makeDeck();
-        drawPile = random.Shuffle(drawPile);
-        let discardPile = [drawPile.pop()];
+        // Create empty card piles - deck, etc will be created in roundplay phase setup hook
+        let drawPile = [];
+        let discardPile = [];
         let playedPile = [];
 
         // Make map of the players - hands, round status, favour token
         let playerMap = makePlayerMap(ctx);
 
-        dealStartingHands(playerMap, drawPile);
+
 
         // Initial state for G object
         return {
@@ -26,23 +25,109 @@ export const LoveLetter = {
         }
     },
 
-    turn: { minMoves: 1, maxMoves: 2 },
+
+    phases: {
+
+        roundPlay: {
+            // Do we want start: true? Or should we have a button that lets us start the 
+            // game mechanics once all players have joined the room?
+            start: true,
+
+            // NOTE - on begin hooks only run on server, not client
+            // Phase setup hook: create + shuffle deck, deal starting card, set start player
+            onBegin: ({ G, ctx, random }) => {
+
+                G.drawPile = makeDeck();
+                G.drawPile = random.Shuffle(G.drawPile);
+                G.discardPile = [G.drawPile.pop()];
+                // Played pile is already empty and should remain so
+
+                dealStartingHands(G.playerMap, G.drawPile);
+
+                // Make all players active in round again and reset anything like handmaid effect
+                resetPlayerRoundInfo(G.playerMap);
+
+                // TO IMPLEMENT - SET THE STARTING PLAYER - (last round winner, or random player if 1st round)
+
+            },
+
+            moves: { playCard },
+
+            turn: {
+                // While this is true, will it end the turn as soon as move is made
+                // Without waiting for other stages?
+                minMoves: 1,
+                maxMoves:1,
+
+                // BEGIN HOOK - RUNS EVERY TIME A NEW TURN BEGINS
+                onBegin: ({ G, ctx, events }) => {
+                    // Check if player knocked out - if yes, end their turn automatically
+                    if (G.playerMap[ctx.currentPlayer].knockedOutOfRound){
+                        events.endTurn();
+                    } else {
+                        // Otherwise, draw card to start turn
+                        drawCard({G, playerID: ctx.currentPlayer});
+                        events.setStage('playCard');
+                    }
+                },
+
+                stages: {
+                    playCard: {
+                        // Players selects which card to play, remove it from their hand and put it on play pile
+                        next: 'chooseTarget'
+                    },
+                    chooseTarget: {
+                        // Not always required, depends on card played
+                    },
+                    resolveCardEffects: {
+                        // e.g. Reveal card, compare hands, knock players out, etc.
+                    }
+                }
+
+                // IMPLEMENT ONEND HOOK - check if round should end (deck empty/only one player left in). 
+                // If not, carry on to next player's turn
+                // If yes, move to roundScoring phase
+            }
+
+        },
+
+        roundScoring: {
+            // All remaining active players reveal their cards
+            // The one(s) with the highest card get a token 
+            // Most recent winner is saved in G (randomise winner if multiple)
+
+
+        },
+
+        roundCleanup: {
+            // Remove cards from player hands, discard, and played pile.
+
+            // ON END HOOK - Check if a player has enough tokens, then go to end of game if so. 
+            // (This could also be at end of roundscoring?) - but just thinking it's neater to always clear hands etc
+
+        },
+
+        endOfGame: {
+            // Winner is displayed, any options to replay, etc. are shown
+        }
+    },
+
 
     moves: { playCard, drawCard },
 
-    minPlayers: 3,
+    minPlayers: 2,
 
 
     // endIf is called every time our state updates - this seems unnecessarily often though?
     // Only required to be called when a round ends...
     // Unless we should use endif for a round, rather than the whole game?
-    endIf: ({ G, ctx }) => {
-        // In practice this will actually be if a player gets X favor tokens
-        // This will actually currently not allow the last player to play their final card either
-        if (G.drawPile.length <= 0) {
-            return { drawPileEmpty: true };
-        }
-    },
+    // endIf: ({ G, ctx }) => {
+    //     // In practice this will actually be if a player gets X favor tokens
+    //     // This will actually currently not allow the last player to play their final card either
+    //     if (G.drawPile.length <= 0) {
+    //         return { drawPileEmpty: true };
+    //     }
+    // },
 
     ai: {
         enumerate: (G, ctx) => {
@@ -125,14 +210,17 @@ function dealStartingHands(playerMap, drawPile) {
 
 }
 
+function resetPlayerRoundInfo(playerMap) {
+    for (const playerID in playerMap) {
+        playerMap[playerID].knockedOutOfRound = false;
+    }
+}
+
 
 
 // -------------- GAME MOVE HELPER FUNCTIONS ---------------
 
-function drawCard(obj, something) {
-
-    let G = obj.G;
-    let playerID = obj.playerID;
+function drawCard({G, playerID}) {
 
     if (G.drawPile.length <= 0) {
         console.log("INVALID MOVE: Draw pile is already empty, cannot draw card!");
