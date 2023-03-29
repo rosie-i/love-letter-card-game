@@ -36,11 +36,15 @@ class LoveLetterClient {
         this.showLayout("connecting");
     }
 
-    onConnected() {
+    onConnected({G, ctx}) {
         this.connected = true;
 
+        // TEMPORARILY CALLING THIS BEFORE CREATE BOARD COS EASIER FOR DEBUGGING
+        this.showLayout("gameplay");
+
+
         // Create board
-        this.createBoard();
+        this.createBoard({G, ctx});
 
         // Then show the gameplay view
         this.showLayout("gameplay");
@@ -72,8 +76,8 @@ class LoveLetterClient {
 
 
     // Creates the UI
-    createBoard() {
-        let board = new Board(this.client);
+    createBoard({G, ctx}) {
+        let board = new Board({G, ctx}, this.client);
         this.board = board;
     }
 
@@ -86,7 +90,7 @@ class LoveLetterClient {
             this.onConnecting();
             return;
         } else if (!this.connected) {
-            this.onConnected();
+            this.onConnected({G: state.G, ctx: state.ctx});
         }
 
         // Update UI

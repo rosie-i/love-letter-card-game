@@ -23,29 +23,174 @@ body,
     height: 100%;
 }
 
+
+/* -- Gameplay opponent area -- */
+
 .gameplay-opponentInfoContainer {
     grid-area: 1 / 1 / 2 / 5;
     background-color: blue;
 
 }
 
+.opponentsFlexContainer {
+    background-color: rgb(40, 165, 255);
+    height: 100%;
+    display: flex;
+    /* We also set flex-wrap: wrap on the Flex container so that the child elements will wrap to the next line if they exceed the width of the container. */
+    flex-wrap: nowrap;
+}
+
+.opponentBoxFlexItem {
+    flex: 1 1 auto;
+
+    background-color: aliceblue;
+    border: 4px solid firebrick;
+    color: black;
+    margin: 2px;
+    padding: 2px;
+}
+
+
+/* -- Gameplay card piles area -- */
+
 .gameplay-cardPilesAreaContainer {
     grid-area: 2 / 1 / 5 / 5;
     background-color: orange;
-
 }
+
+.cardPileGridContainer {
+    height: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr) 0.2fr 2fr 0.5fr 2fr 0.2fr 1fr 0.2fr 1fr 0.2fr;
+    grid-template-rows: 1fr 0.7fr 1fr 0.7fr 1fr;
+    grid-column-gap: 0px;
+    grid-row-gap: 0px;
+    
+}
+
+.cardPileDeckCount { 
+    grid-area: 3 / 2 / 4 / 3;
+    background-color: black;
+}
+.cardPileDeck { 
+    grid-area: 2 / 4 / 5 / 5; 
+    background-color: rgb(187, 255, 0);
+}
+.cardPilePlayed { 
+    grid-area: 2 / 6 / 5 / 7; 
+    background-color: rgb(0, 255, 4);
+    /* ADDING THE WIDTH AND HEIGHT and pos rel FOR ANIMATION TESTING */
+    width: 100px;
+    height: 150px;
+    position: relative;
+}
+.cardPilePlayedCount {
+    grid-area: 3 / 8 / 4 / 9;
+    background-color: black;
+}
+.cardPileDiscard { 
+    grid-area: 3 / 10 / 5 / 11; 
+    background-color: rgb(0, 115, 255);
+}
+
+
+/* -- Gameplay player hand/info area -- */
 
 .gameplay-playerHandAndInfoContainer {
     grid-area: 5 / 1 / 6 / 5;
-    background-color: yellow;
+    background-color: rgb(47, 47, 47);
+}
+
+.playerHandInfoGridContainer {
+    height: 100%;
+    display: grid;
+    grid-template-columns: 2fr 0.4fr 1.5fr 0.2fr 1.5fr 0.4fr;
+    grid-template-rows: 0.75fr 0.25fr 3fr;
+    grid-column-gap: 0px;
+    grid-row-gap: 0px;
+}
+
+.playerHandInfoGameRoundStats { 
+    grid-area: 1 / 1 / 4 / 2;
+    background-color: rgb(175, 0, 181);
+}
+.playerHandInfoHeader { 
+    grid-area:  1 / 2 / 2 / 7;
+    background-color: rgb(26, 26, 26);
 
 }
+.playerHandInfoCardLeft { 
+    grid-area: 3 / 3 / 4 / 4; 
+    /* background-color: rgb(0, 255, 4); */
+}
+.playerHandInfoCardRight {
+    grid-area: 3 / 5 / 4 / 6;
+    /* background-color: rgb(27, 124, 110); */
+}
+
+
+/* NOTE: EVERYTHING FROM HERE DOWN TO GAME LOG SECTION IS JUST PRACTICE CSS ANIMATIONS */
+/* God damn, that looks greater than any CSS I've ever written, madness */
+.CARD-ANIMATION-TESTINGGG {
+    /* Set the default size of the card */
+    width: 100px;
+    height: 150px;
+    /* Add some styles to make it look like a card */
+    border: 1px solid #887b4a;
+    border-radius: 5px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+    /* Add a transition to smoothly animate the size change */
+    transition: transform 0.2s ease-in-out;
+
+    background-image: url("src/imgs/8-princess.webp");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.CARD-ANIMATION-TESTINGGG:hover {
+    /* When the user hovers over the card, make it a bit bigger */
+    transform: scale(1.05);
+}
+
+.CARD-ANIMATION-TESTINGGG:active {
+    transform: scale(0.95); /* decrease the size of the card when clicked */
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5); /* add a subtle shadow to indicate click */
+}
+
+
+
+
+
+
+
+
+/* This is cool in combo with an onclick add class! Though not sure it's actually what I want */
+/* 
+.moveUpToPlayedPile {
+    animation-name: moveUpToPlayedPile;
+    animation-duration: 1s;
+}
+
+@keyframes moveUpToPlayedPile {
+    from {
+      transform: translate(0, 0);
+    }
+    to {
+      transform: translate(80px, -270px);
+    }
+  } */
+
+
+/* -- Gameplay game log area -- */
 
 .gameplay-gameLogContainer {
     grid-area: 1 / 5 / 4 / 6;
     background-color: red;
 
 }
+
+/* -- Gameplay chat log area -- */
 
 .gameplay-chatContainer {
     grid-area: 4 / 5 / 6 / 6;
@@ -57,12 +202,6 @@ body,
 
 
 
-
-
-.players {
-    background-color: rgb(40, 165, 255);
-
-}
 
 .playerBox {
     background-color: aliceblue;

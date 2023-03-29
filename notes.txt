@@ -32,3 +32,7 @@ Game end:
 - Num of tokens to win is different depending on num of players - can implement later
 
 
+Additional feature thoughts:
+- Keyboard shortcuts!
+- Game log - assign colour for each player and highlight their names in log
+- Animations! Smooooth transitions.
