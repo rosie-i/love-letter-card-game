@@ -24,6 +24,7 @@ class OpponentInfoBox {
                                                 Round status: ${status}
                                             </div>
                                             <div class="opponentHand">
+                                                Cards in hand: ${this.opponentPlayerMap.hand.length}
                                             </div>
                                             <div class="opponentHandmaidStatus">
                                             </div>

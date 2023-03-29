@@ -8,7 +8,7 @@ body {
 html,
 body,
 .fullscreen {
-	height: 100%;
+    height: 100%;
 }
 
 
@@ -65,31 +65,35 @@ body,
     grid-template-rows: 1fr 0.7fr 1fr 0.7fr 1fr;
     grid-column-gap: 0px;
     grid-row-gap: 0px;
-    
+
 }
 
-.cardPileDeckCount { 
+.cardPileDeckCount {
     grid-area: 3 / 2 / 4 / 3;
     background-color: black;
 }
-.cardPileDeck { 
-    grid-area: 2 / 4 / 5 / 5; 
+
+.cardPileDeck {
+    grid-area: 2 / 4 / 5 / 5;
     background-color: rgb(187, 255, 0);
 }
-.cardPilePlayed { 
-    grid-area: 2 / 6 / 5 / 7; 
+
+.cardPilePlayed {
+    grid-area: 2 / 6 / 5 / 7;
     background-color: rgb(0, 255, 4);
     /* ADDING THE WIDTH AND HEIGHT and pos rel FOR ANIMATION TESTING */
     width: 100px;
     height: 150px;
     position: relative;
 }
+
 .cardPilePlayedCount {
     grid-area: 3 / 8 / 4 / 9;
     background-color: black;
 }
-.cardPileDiscard { 
-    grid-area: 3 / 10 / 5 / 11; 
+
+.cardPileDiscard {
+    grid-area: 3 / 10 / 5 / 11;
     background-color: rgb(0, 115, 255);
 }
 
@@ -110,19 +114,22 @@ body,
     grid-row-gap: 0px;
 }
 
-.playerHandInfoGameRoundStats { 
+.playerHandInfoGameRoundStats {
     grid-area: 1 / 1 / 4 / 2;
     background-color: rgb(175, 0, 181);
 }
-.playerHandInfoHeader { 
-    grid-area:  1 / 2 / 2 / 7;
+
+.playerHandInfoHeader {
+    grid-area: 1 / 2 / 2 / 7;
     background-color: rgb(26, 26, 26);
 
 }
-.playerHandInfoCardLeft { 
-    grid-area: 3 / 3 / 4 / 4; 
+
+.playerHandInfoCardLeft {
+    grid-area: 3 / 3 / 4 / 4;
     /* background-color: rgb(0, 255, 4); */
 }
+
 .playerHandInfoCardRight {
     grid-area: 3 / 5 / 4 / 6;
     /* background-color: rgb(27, 124, 110); */
@@ -154,8 +161,10 @@ body,
 }
 
 .CARD-ANIMATION-TESTINGGG:active {
-    transform: scale(0.95); /* decrease the size of the card when clicked */
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5); /* add a subtle shadow to indicate click */
+    transform: scale(0.95);
+    /* decrease the size of the card when clicked */
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    /* add a subtle shadow to indicate click */
 }
 
 
@@ -198,6 +207,40 @@ body,
 
 }
 
+.chatlog {
+    height: calc(100% - 26px);
+
+    overflow-y: scroll;
+}
+
+.chatMessageItem {
+    padding: 3px;
+}
+
+.chatMessageItem:nth-child(odd) {
+    background-color: #d0d0d0;
+}
+
+.chatMessageItem:nth-child(even) {
+    background-color: #9f9f9f;
+}
+
+#chatMessageForm {
+    display: flex;
+}
+
+#chatMessageInput {
+    flex-grow: 1;
+    border: none;
+}
+
+#chatMessageSendBtn {
+    padding: 5px 10px;
+    border: none;
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+}
 
 
 
@@ -219,9 +262,7 @@ body,
 
 }
 
-.discardPileList {
-
-}
+.discardPileList {}
 
 .playedPile {
     background-color: rgb(255, 191, 40);

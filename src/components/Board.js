@@ -1,5 +1,9 @@
 import { CARD_INFO } from "../CardInfo";
-import OpponentInfoBox from "./OpponentInfoBox";
+import OpponentsArea from "./OpponentsArea";
+import CardPileArea from "./CardPileArea";
+import PlayerHandInfoArea from "./PlayerHandInfoArea";
+import GameLogInfoArea from "./GameLogArea";
+import ChatArea from "./ChatArea";
 
 class Board {
     constructor({G, ctx}, client) {
@@ -17,7 +21,7 @@ class Board {
         // Might get rid of two below
         // play area no longer exists and i think everything using it is commented out
         // this.playArea = document.getElementById('play-area');
-        this.gameLog = document.getElementById('game-log');
+        // this.gameLog = document.getElementById('game-log');
 
 
         // IN PROGRESS - IMPLEMENTING! 
@@ -33,16 +37,17 @@ class Board {
         // ---- DONE:
         // NOTE: HAVE I DONE STATE UPDATE FOR NEW OPPONENTS AREA THOUGH??
         // NEED TO DOUBLE CHECK!! I DON'T THINK I FINISHED IT!
-        createOpponentArea(this, G);
+
+        new OpponentsArea(this, G);
+        new ChatArea(this, G);
+
 
         // ---- IN PROGRESS:
-        createCardPileArea(this, G);
-        createPlayerHandInfoArea(this, G);
-
+        new CardPileArea(this, G);
+        new PlayerHandInfoArea(this, G);
 
         // ---- TO IMPLEMENT/REFACTOR:
-        // createGameLogArea();
-        // createChatArea();
+        new GameLogInfoArea(this, G);
 
         // THIS CAN STAY HERE FOR NOW BUT WILL PROBS GET RID OF PLAY-AREA IN FAVOUR OF gameplay-cardPilesAreaContainer
         // let drawPileDiv = document.createElement("div");
@@ -150,117 +155,15 @@ class Board {
     }
 
     // Log in game log section, for convenience while implementing game mechanics
-    addGameLogMsg(text) {
-        let item = document.createElement("ul");
-        item.textContent = text;
-        this.gameLog.append(item);
-    }
+    // addGameLogMsg(text) {
+    //     let item = document.createElement("ul");
+    //     item.textContent = text;
+    // THIS.GAMELOG NO LONGER EXISTS!
+    //     this.gameLog.append(item);
+    // }
 
 }
 
-
-function createOpponentArea(board, G){
-    
-    // TO IMPLEMENT/TO IMPROVE:
-    // I think having opponentsFlexContainer + opponentInfoContainer is potentially slightly confusing/superfluous
-    // At the very least rename them - opponentInfoContainer is the outer grid item
-    // opponentsFlexContainer is the inner container set to display:flex
-    let opponentsFlexContainer = document.createElement("div");
-    opponentsFlexContainer.classList.add("opponentsFlexContainer");
-    // We'll leave players div in existence for now bc the updates rely on it, but will fix in a bit!
-    // WE'LL CHANGE IT'S NAME TO OPPONENTS CONTAINER THOUGH AND MAKE IT A FLEXY BOXXXXX
-
-    board.opponentsFlexContainer = opponentsFlexContainer;
-    board.opponentInfoContainer.append(opponentsFlexContainer);
-    
-    board.opponentInfoBoxes = [];
-
-    // EXTRA TO IMPLEMENT - Ideally we want them rendered in turn order - so whoever is after you is first, then continue from there
-    for (const playerID in G.playerMap){
-        // Do not render the client's info in this board section
-        if (playerID === board.client.playerID){
-            continue;
-        }
-
-        let newOpponentBox = new OpponentInfoBox(playerID, G.playerMap[playerID], board.opponentsFlexContainer);
-        board.opponentInfoBoxes.push(newOpponentBox);
-    }
-}
-
-function createCardPileArea(board, G){
-    let cardPilesGridContainer = document.createElement("div");
-    cardPilesGridContainer.classList.add("cardPileGridContainer");
-    cardPilesGridContainer.innerHTML = `<div class="cardPileDeckCount"> Deck count: blah 10 </div>
-                                        <div class="cardPileDeck"> 🃏 </div>
-                                        <div class="cardPilePlayed"> 🃏 </div>
-                                        <div class="cardPilePlayedCount"> Played cards count: blah 1 </div>
-                                        <div class="cardPileDiscard"> 🃏 </div>`
-    board.cardPilesAreaContainer.append(cardPilesGridContainer);
-
-    // TO IMPLEMENT:
-    // - Get current/initial state of card piles and render!
-    // - Probably want to save each of the divs that need re-rendering
-    // - Which makes me think that card pile area needs to be it's own class
-    // - So it's a separate component with it's methods
-    // - Rather than taking up all the space here!
-    // - And we can do it like we did for the opponent info box
-    // - Where we have the template literal and create it
-}
-
-function createPlayerHandInfoArea(board, G){
-
-    // TO IMPLEMENT - Hard coded vals atm, dynamically render for each client
-    // Need board.client.playerID for playermap
-
-    let playerHandInfoGridContainer = document.createElement("div");
-    playerHandInfoGridContainer.classList.add("playerHandInfoGridContainer");
-    playerHandInfoGridContainer.innerHTML = `<div class="playerHandInfoGameRoundStats">
-                                                Rosie
-                                                Tokens: 5
-                                                Round status: Active
-                                                Handmaid: Protected!
-                                            </div>
-                                            <div class="playerHandInfoHeader"> Your Hand </div>
-                                            <div class="playerHandInfoCardLeft CARD-ANIMATION-TESTINGGG "></div>
-                                            <div class="playerHandInfoCardRight CARD-ANIMATION-TESTINGGG "></div>`
-    board.playerHandAndInfoContainer.append(playerHandInfoGridContainer);
-
-
-    // This is also animation testing stuff for keyframe move up to played
-    const cardToMove = document.querySelector('.playerHandInfoCardLeft');
-    cardToMove.addEventListener('click', () => {
-        cardToMove.classList.add('moveUpToPlayedPile');
-    });
-
-    const source = document.querySelector('.playerHandInfoCardLeft');
-    const source2 = document.querySelector('.playerHandInfoCardRight');
-
-    const target = document.querySelector('.cardPilePlayed');
-
-    // OK THIS ACTUALLY BASICALLY WORKS! Wowww.
-    // Little buggy though, idk if this is even best way to do it
-    // Just cool to see it moving smoothly though!!
-    source.addEventListener('click', () => {
-        const targRect = target.getBoundingClientRect();
-        const sourceRect = source.getBoundingClientRect();
-
-        let horiz = targRect.left - sourceRect.left;
-        let vert = targRect.top - sourceRect.top;
-
-        source.style.transform = `translate(${horiz}px, ${vert}px)`;
-    });
-    source2.addEventListener('click', () => {
-        const targRect = target.getBoundingClientRect();
-        const sourceRect = source2.getBoundingClientRect();
-
-        let horiz = targRect.left - sourceRect.left;
-        let vert = targRect.top - sourceRect.top;
-
-        source2.style.transform = `translate(${horiz}px, ${vert}px)`;
-    });
-
-
-}
 
 // Lotsa refactoring required here!
 // Moving all of this around/lots of editing

@@ -39,9 +39,6 @@ class LoveLetterClient {
     onConnected({G, ctx}) {
         this.connected = true;
 
-        // TEMPORARILY CALLING THIS BEFORE CREATE BOARD COS EASIER FOR DEBUGGING
-        this.showLayout("gameplay");
-
 
         // Create board
         this.createBoard({G, ctx});
@@ -111,6 +108,12 @@ class App {
         // Game Lobby listeners will then create new client when someone joins game
         this.attachGameLobbyListeners();
         this.appElement = appElement;
+
+
+        // FOR DEVELOPING: Automatically enter game
+        document.getElementById("player-id-input-existing-game").value = 0;
+
+          
 
     }
 
