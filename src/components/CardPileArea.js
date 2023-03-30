@@ -11,10 +11,10 @@ class CardPileArea {
         let cardPilesGridContainer = document.createElement("div");
         cardPilesGridContainer.classList.add("cardPileGridContainer");
         cardPilesGridContainer.innerHTML = `<div class="cardPileDeckCount"> Deck count: ${G.drawPile.length} </div>
-                                        <div class="cardPileDeck"> 🃏 </div>
-                                        <div class="cardPilePlayed"> 🃏 </div>
+                                        <div class="cardPileDeck"></div>
+                                        <div class="cardPilePlayed"></div>
                                         <div class="cardPilePlayedCount"> Played cards count: ${G.playedPile.length} </div>
-                                        <div class="cardPileDiscard"> 🃏 </div>`
+                                        <div class="cardPileDiscard"></div>`
         this.parent.cardPilesAreaContainer.append(cardPilesGridContainer);
 
         // Save divs that will need updating

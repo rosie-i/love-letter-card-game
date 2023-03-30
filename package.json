@@ -13,7 +13,8 @@
   "license": "ISC",
   "dependencies": {
     "boardgame.io": "^0.50.2",
-    "esm": "^3.2.25"
+    "esm": "^3.2.25",
+    "src": "^1.1.2"
   },
   "devDependencies": {
     "parcel-bundler": "^1.12.5"

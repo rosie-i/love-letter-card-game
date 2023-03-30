@@ -44,7 +44,8 @@ class Board {
 
         // ---- IN PROGRESS:
         new CardPileArea(this, G);
-        new PlayerHandInfoArea(this, G);
+        new PlayerHandInfoArea(this, G.playerMap[this.client.playerID]);
+        
 
         // ---- TO IMPLEMENT/REFACTOR:
         new GameLogInfoArea(this, G);

@@ -28,12 +28,11 @@ body,
 
 .gameplay-opponentInfoContainer {
     grid-area: 1 / 1 / 2 / 5;
-    background-color: blue;
+    background-color: rgb(45, 0, 0);
 
 }
 
 .opponentsFlexContainer {
-    background-color: rgb(40, 165, 255);
     height: 100%;
     display: flex;
     /* We also set flex-wrap: wrap on the Flex container so that the child elements will wrap to the next line if they exceed the width of the container. */
@@ -55,7 +54,9 @@ body,
 
 .gameplay-cardPilesAreaContainer {
     grid-area: 2 / 1 / 5 / 5;
-    background-color: orange;
+    /* Set plain rgb background colour in case radial-gradient doesn't work on all browsers */
+    background: rgb(75,0,0);
+    background: radial-gradient(circle, rgba(75,0,0,1) 0%, rgba(51,0,0,1) 37%, rgba(33,0,3,1) 100%);
 }
 
 .cardPileGridContainer {
@@ -75,7 +76,23 @@ body,
 
 .cardPileDeck {
     grid-area: 2 / 4 / 5 / 5;
-    background-color: rgb(187, 255, 0);
+    background-color: rgb(93, 0, 0);
+
+    /* Set the default size of the card */
+    width: 100px;
+    height: 150px;
+
+    /* Add some styles to make it look like a card */
+    border: 1px solid #310000;
+    border-radius: 5px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+
+
+    background-image: url("src/imgs/card-back.webp");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    
 }
 
 .cardPilePlayed {
@@ -84,7 +101,16 @@ body,
     /* ADDING THE WIDTH AND HEIGHT and pos rel FOR ANIMATION TESTING */
     width: 100px;
     height: 150px;
-    position: relative;
+
+    border: 1px solid #310000;
+    border-radius: 5px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+
+    /* position: relative; */
+    background-image: url("src/imgs/empty-pile.webp");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 .cardPilePlayedCount {
@@ -94,7 +120,19 @@ body,
 
 .cardPileDiscard {
     grid-area: 3 / 10 / 5 / 11;
-    background-color: rgb(0, 115, 255);
+    
+    width: 75px;
+    height: 105px;
+
+    border: 1px solid #310000;
+    border-radius: 5px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+
+    background-image: url("src/imgs/empty-pile.webp");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
 }
 
 
@@ -125,15 +163,32 @@ body,
 
 }
 
-.playerHandInfoCardLeft {
+#playerHandInfo-CardLeftContainer {
     grid-area: 3 / 3 / 4 / 4;
-    /* background-color: rgb(0, 255, 4); */
+
 }
 
-.playerHandInfoCardRight {
+#playerHandInfo-CardRightContainer {
     grid-area: 3 / 5 / 4 / 6;
-    /* background-color: rgb(27, 124, 110); */
 }
+
+.playerHandEmptyCardSlot {
+    max-width: 100px;
+    max-height: 150px;
+
+}
+
+.playerHandCard {
+    max-width: 100px;
+    max-height: 150px;
+
+
+    border: 1px solid #310000;
+    border-radius: 5px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+
+}
+
 
 
 /* NOTE: EVERYTHING FROM HERE DOWN TO GAME LOG SECTION IS JUST PRACTICE CSS ANIMATIONS */
@@ -149,7 +204,7 @@ body,
     /* Add a transition to smoothly animate the size change */
     transition: transform 0.2s ease-in-out;
 
-    background-image: url("src/imgs/8-princess.webp");
+    background-image: url("src/imgs/8.webp");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -261,9 +316,11 @@ body,
     background-color: rgb(180, 255, 40);
 
 }
-
-.discardPileList {}
-
+/* 
+.discardPileList {
+    
+}
+ */
 .playedPile {
     background-color: rgb(255, 191, 40);
 
