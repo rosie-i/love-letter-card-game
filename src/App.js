@@ -11,7 +11,10 @@ class LoveLetterClient {
             numPlayers: 3,
             multiplayer: SocketIO({ server: 'localhost:8000' }),
             matchID: data.matchID,
-            playerID: data.playerID
+            playerID: data.playerID,
+            debug: {
+                collapseOnLoad: true
+            },
         });
 
         this.connected = false;

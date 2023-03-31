@@ -32,8 +32,32 @@ class OpponentsArea {
         }
     }
 
+    update(state){
 
+        // Get the active player, if it has changed then we'll update the activeplayer CSS
+        if (this.activePlayerID !== state.ctx.currentPlayer) {
+            this.activePlayerID = state.ctx.currentPlayer;
+            highlightActivePlayer(this.activePlayerID, this.opponentInfoBoxes);
+        }
+        // this.activePlayer
+        // add playerActiveHighlight class to current player
+        // and remove from all others
+        
 
+    }
+
+}
+
+function highlightActivePlayer(activePlayerID, opponentsArray){
+    // Iterate over opponents array
+    for (const opponent of opponentsArray){
+        if (activePlayerID === opponent.opponentPlayerID){
+            opponent.opponentBoxDiv.firstChild.classList.add("playerActiveHighlight");
+        } else {
+            // remove highlight class
+            opponent.opponentBoxDiv.firstChild.classList.remove("playerActiveHighlight");
+        }
+    }
 }
 
 export default OpponentsArea;

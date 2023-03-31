@@ -115,13 +115,18 @@ class Board {
         this.currentTurnPlayerID = state.ctx.currentPlayer;
         this.playerMap = state.G.playerMap;
 
-        let playerInfo = state.G.playerMap[this.playerID]
-        this.playerHandInfoArea.update(playerInfo);
+        let playerInfo = state.G.playerMap[this.playerID];
+        let isActivePlayer = (this.currentTurnPlayerID === this.playerID);
+        this.playerHandInfoArea.update(playerInfo, isActivePlayer);
 
         // update opponent area
+        this.opponentsArea.update(state);
 
         // update card pile area
         this.cardPileArea.update(state.G);
+
+        // Game log update
+        this.gameLogArea.update(state.G.gameLog);
 
 
         // TO IMPLEMENT:

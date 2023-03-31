@@ -14,10 +14,12 @@ class PlayerHandInfoArea {
         let playerHandInfoGridContainer = document.createElement("div");
         playerHandInfoGridContainer.classList.add("playerHandInfoGridContainer");
         playerHandInfoGridContainer.innerHTML = `<div class="playerHandInfoGameRoundStats">
-                                                    <div class="playerHandInfo-PlayerName">You</div>
-                                                    <div class="playerHandInfo-Tokens"></div>
-                                                    <div class="playerHandInfo-RoundStatus"></div>
-                                                    <div class="playerHandInfo-Handmaid"></div>
+                                                    <div class="playerHandInner">
+                                                        <div class="playerHandInfo-PlayerName">You</div>
+                                                        <div class="playerHandInfo-Tokens"></div>
+                                                        <div class="playerHandInfo-RoundStatus"></div>
+                                                        <div class="playerHandInfo-Handmaid"></div>
+                                                    </div>
                                                 </div>
                                                 <div class="playerHandInfoHeader"> Your Hand </div>
                                                 <div id="playerHandInfo-CardLeftContainer" class="playerHandEmptyCardSlot"></div>
@@ -35,11 +37,19 @@ class PlayerHandInfoArea {
         this.targetWhichPlayerModal = playerHandInfoGridContainer.getElementsByClassName("targetWhichPlayerModal")[0];
         this.leftCard = new Card(this.cardLeftContainer, "empty-pile");
         this.rightCard = new Card(this.cardRightContainer, "empty-pile");
+        this.playerHandInner = playerHandInfoGridContainer.getElementsByClassName("playerHandInner")[0];
 
 
     }
 
-    update(playerInfo) {
+    update(playerInfo, isActivePlayer) {
+
+
+
+        updateActivePlayerHighlight(isActivePlayer, this.playerHandInner);
+        
+
+
         this.playerTokens.textContent = `Favor tokens: ${playerInfo.favourTokenCount}`;
 
         this.roundStatus.textContent = playerInfo.knockedOutOfRound ? "Round status: Knocked out" : "Round status: Active";;
@@ -106,7 +116,15 @@ class PlayerHandInfoArea {
 }
 
 
+function updateActivePlayerHighlight(isActivePlayer, div){
 
+    if (isActivePlayer){
+        div.classList.add("playerActiveHighlight");
+    } else {
+        div.classList.remove("playerActiveHighlight");
+    }
+
+}
 // NOTHING SOLID HERE ATM, JUST TESTING
 function addListenersAndAnimations() {
 

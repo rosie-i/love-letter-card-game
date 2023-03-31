@@ -10,18 +10,18 @@ export const LoveLetter = {
         let drawPile = [];
         let discardPile = [];
         let playedPile = [];
-
+        
         // Make map of the players - hands, round status, favour token
         let playerMap = makePlayerMap(ctx);
-
-
+        
 
         // Initial state for G object
         return {
             drawPile: drawPile,
             discardPile: discardPile,
             playedPile: playedPile,
-            playerMap: playerMap
+            playerMap: playerMap,
+            gameLog: []
         }
     },
 
@@ -57,7 +57,7 @@ export const LoveLetter = {
                 // While this is true, will it end the turn as soon as move is made
                 // Without waiting for other stages? - And also I can't end turn of ppl who are knocked out
                 // minMoves: 1,
-                maxMoves:1,
+                maxMoves: 1,
 
                 // BEGIN HOOK - RUNS EVERY TIME A NEW TURN BEGINS
                 onBegin: ({ G, ctx, events }) => {
@@ -245,6 +245,15 @@ function drawCard({G, playerID}) {
 
     let drawn = G.drawPile.pop();
     hand.push(drawn);
+
+    // Add to game log
+    const logEntry = {
+        playerID: playerID,
+        action: "drew",
+        cardVal: drawn.val
+    };
+
+    G.gameLog.push(logEntry);
 }
 
 // Need to add targetted player parameter to see who the card is being played against
@@ -273,6 +282,17 @@ function playCard(obj, cardNum, targetedPlayerID) {
 
     // Add to played pile
     G.playedPile.push(playedCard);
+
+
+    // Add to game log 
+    const logEntry = {
+        playerID: obj.ctx.currentPlayer,
+        action: "played",
+        cardVal: cardNum,
+        targetedPlayerID: targetedPlayerID
+    };
+
+    G.gameLog.push(logEntry);
 
     // IMPLEMENT - ACTION THE EFFECTS OF THE CARD
 
