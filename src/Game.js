@@ -10,10 +10,10 @@ export const LoveLetter = {
         let drawPile = [];
         let discardPile = [];
         let playedPile = [];
-        
+
         // Make map of the players - hands, round status, favour token
         let playerMap = makePlayerMap(ctx);
-        
+
 
         // Initial state for G object
         return {
@@ -62,11 +62,11 @@ export const LoveLetter = {
                 // BEGIN HOOK - RUNS EVERY TIME A NEW TURN BEGINS
                 onBegin: ({ G, ctx, events }) => {
                     // Check if player knocked out - if yes, end their turn automatically
-                    if (G.playerMap[ctx.currentPlayer].knockedOutOfRound){
+                    if (G.playerMap[ctx.currentPlayer].knockedOutOfRound) {
                         events.endTurn();
                     } else {
                         // Otherwise, draw card to start turn
-                        drawCard({G, playerID: ctx.currentPlayer});
+                        drawCard({ G, playerID: ctx.currentPlayer });
                     }
                 },
 
@@ -206,7 +206,7 @@ function makePlayerMap(ctx) {
 
     return playerMap;
 
-    
+
 }
 
 function dealStartingHands(playerMap, drawPile) {
@@ -228,7 +228,7 @@ function resetPlayerRoundInfo(playerMap) {
 
 // -------------- GAME MOVE HELPER FUNCTIONS ---------------
 
-function drawCard({G, playerID}) {
+function drawCard({ G, playerID }) {
 
     if (G.drawPile.length <= 0) {
         console.log("INVALID MOVE: Draw pile is already empty, cannot draw card!");
@@ -257,7 +257,7 @@ function drawCard({G, playerID}) {
 }
 
 // Need to add targetted player parameter to see who the card is being played against
-function playCard(obj, cardNum, targetedPlayerID) {
+function playCard(obj, cardVal, targetedPlayerID) {
 
     let G = obj.G;
     let playerID = obj.playerID;
@@ -274,7 +274,7 @@ function playCard(obj, cardNum, targetedPlayerID) {
 
     // Remove selected card from their hand
     let playedCard;
-    if (hand[1].val === cardNum) {
+    if (hand[1].val === cardVal) {
         playedCard = hand.pop();
     } else {
         playedCard = hand.shift();
@@ -288,13 +288,78 @@ function playCard(obj, cardNum, targetedPlayerID) {
     const logEntry = {
         playerID: obj.ctx.currentPlayer,
         action: "played",
-        cardVal: cardNum,
+        cardVal: cardVal,
         targetedPlayerID: targetedPlayerID
     };
 
     G.gameLog.push(logEntry);
 
     // IMPLEMENT - ACTION THE EFFECTS OF THE CARD
+    resolveCardEffects(G, cardVal, targetedPlayerID);
+}
+
+function resolveCardEffects(G, cardVal, targetedPlayerID) {
+
+
+    switch (cardVal) {
+        case 1:
+            console.log("Card 1 has not yet been implemented");
+            break;
+        case 2:
+            console.log("Card 2 has not yet been implemented");
+            break;
+        case 3:
+            console.log("Card 3 has not yet been implemented");
+            break;
+        case 4:
+            console.log("Card 4 has not yet been implemented");
+            break;
+        case 5:
+            console.log("Card 5 has not yet been implemented");
+            break;
+        case 6:
+            console.log("Card 6 has not yet been implemented");
+            break;
+        case 7:
+            console.log("Card 7 has not yet been implemented");
+            break;
+        case 8:
+            console.log("Card 8 has not yet been implemented");
+            break;
+        default:
+            console.log("Invalid card num played");
+    }
 
 }
 
+function resolveGuard() {
+
+}
+
+function resolvePriest() {
+
+}
+
+function resolveBaron() {
+
+}
+
+function resolveHandmaid() {
+
+}
+
+function resolvePrince() {
+
+}
+
+function resolveKing() {
+
+}
+
+function resolveCountess() {
+
+}
+
+function resolvePrincess() {
+
+}
