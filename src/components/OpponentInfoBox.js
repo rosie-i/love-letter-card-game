@@ -1,7 +1,7 @@
 
 
 class OpponentInfoBox {
-    constructor(opponentPlayerID, opponentPlayerMap,parentEl) {
+    constructor(opponentPlayerID, opponentPlayerMap, parentEl) {
         this.parent = parentEl;
         this.opponentPlayerID = opponentPlayerID;
         this.opponentPlayerMap = opponentPlayerMap

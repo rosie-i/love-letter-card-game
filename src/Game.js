@@ -57,7 +57,7 @@ export const LoveLetter = {
                 // While this is true, will it end the turn as soon as move is made
                 // Without waiting for other stages? - And also I can't end turn of ppl who are knocked out
                 // minMoves: 1,
-                // maxMoves:1,
+                maxMoves:1,
 
                 // BEGIN HOOK - RUNS EVERY TIME A NEW TURN BEGINS
                 onBegin: ({ G, ctx, events }) => {
@@ -248,7 +248,7 @@ function drawCard({G, playerID}) {
 }
 
 // Need to add targetted player parameter to see who the card is being played against
-function playCard(obj, cardNum) {
+function playCard(obj, cardNum, targetedPlayerID) {
 
     let G = obj.G;
     let playerID = obj.playerID;

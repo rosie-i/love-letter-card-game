@@ -9,6 +9,7 @@ class Board {
     constructor({G, ctx}, client) {
 
         this.client = client;
+        this.playerID = client.playerID;
 
         this.container = document.getElementById('gameplayView');
         this.opponentInfoContainer = this.container.getElementsByClassName("gameplay-opponentInfoContainer")[0];
@@ -38,36 +39,17 @@ class Board {
         // NOTE: HAVE I DONE STATE UPDATE FOR NEW OPPONENTS AREA THOUGH??
         // NEED TO DOUBLE CHECK!! I DON'T THINK I FINISHED IT!
 
-        new OpponentsArea(this, G);
-        new ChatArea(this, G);
+        this.opponentsArea = new OpponentsArea(this, G);
+        this.chatArea = new ChatArea(this, G);
 
 
         // ---- IN PROGRESS:
-        new CardPileArea(this, G);
-        new PlayerHandInfoArea(this, G.playerMap[this.client.playerID]);
+        this.cardPileArea = new CardPileArea(this, G);
+        this.playerHandInfoArea = new PlayerHandInfoArea(this, G.playerMap[this.client.playerID]);
         
 
         // ---- TO IMPLEMENT/REFACTOR:
-        new GameLogInfoArea(this, G);
-
-        // THIS CAN STAY HERE FOR NOW BUT WILL PROBS GET RID OF PLAY-AREA IN FAVOUR OF gameplay-cardPilesAreaContainer
-        // let drawPileDiv = document.createElement("div");
-        // this.drawPileDiv = drawPileDiv;
-        // drawPileDiv.classList.add("drawPile");
-        // drawPileDiv.textContent = "Draw pile loading";
-        // this.playArea.append(drawPileDiv);
-
-        // let discardPileDiv = document.createElement("div");
-        // this.discardPileDiv = discardPileDiv;
-        // discardPileDiv.classList.add("discardPile");
-        // discardPileDiv.textContent = "Discard pile loading";
-        // this.playArea.append(discardPileDiv);
-
-        // let playedPileDiv = document.createElement("div");
-        // this.playedPileDiv = playedPileDiv;
-        // playedPileDiv.classList.add("playedPile");
-        // playedPileDiv.textContent = "Played pile loading";
-        // this.playArea.append(playedPileDiv);
+        this.gameLogArea = new GameLogInfoArea(this, G);
 
 
         // SOME OF THIS MIGHT BE USEFUL
@@ -129,6 +111,17 @@ class Board {
     }
 
     stateUpdate(state) {
+
+        this.currentTurnPlayerID = state.ctx.currentPlayer;
+        this.playerMap = state.G.playerMap;
+
+        let playerInfo = state.G.playerMap[this.playerID]
+        this.playerHandInfoArea.update(playerInfo);
+
+        // update opponent area
+
+        // update card pile area
+        this.cardPileArea.update(state.G);
 
 
         // TO IMPLEMENT:

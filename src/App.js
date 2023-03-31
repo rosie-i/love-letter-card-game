@@ -39,6 +39,8 @@ class LoveLetterClient {
     onConnected({G, ctx}) {
         this.connected = true;
 
+        // FOR DEBUGGING
+        this.showLayout("gameplay");
 
         // Create board
         this.createBoard({G, ctx});

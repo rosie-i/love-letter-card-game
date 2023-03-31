@@ -13,7 +13,7 @@ class Card {
 
     create(){
         const card = document.createElement('img');
-        card.classList.add("playerHandCard");
+        card.classList.add("cardClassImg");
         this.parent.append(card);
         this.cardEl = card;
     }
@@ -21,13 +21,13 @@ class Card {
     updateCardVal(newVal){
         this.val = newVal;
         this.cardEl.dataset.cardVal = newVal;
-
+        
+        
         this.name = CARD_INFO.cardNames[newVal] || newVal;
-
-        console.log(this.images[newVal]);
+        this.cardEl.dataset.cardName = this.name;
 
         // this.cardEl.src = this.images[newVal];
-        this.cardEl.src = this.images[newVal] + '?random=' + Math.random();
+        this.cardEl.src = this.images[newVal];
 
 
     }

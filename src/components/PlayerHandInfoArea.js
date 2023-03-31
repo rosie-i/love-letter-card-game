@@ -4,15 +4,12 @@ class PlayerHandInfoArea {
     constructor(parent, playerInfo) {
         this.parent = parent;
 
-        this.create(playerInfo);
+        this.create();
+        this.update(playerInfo);
+        this.attachListeners();
     }
 
-    create(playerInfo) {
-
-
-        // TO IMPLEMENT - Hard coded vals atm, dynamically render for each client
-        // Need this.parent.client.playerID for playermap
-        let status = playerInfo.knockedOutOfRound ? "Knocked out" : "Active";
+    create() {
 
         let playerHandInfoGridContainer = document.createElement("div");
         playerHandInfoGridContainer.classList.add("playerHandInfoGridContainer");
@@ -24,43 +21,90 @@ class PlayerHandInfoArea {
                                                 </div>
                                                 <div class="playerHandInfoHeader"> Your Hand </div>
                                                 <div id="playerHandInfo-CardLeftContainer" class="playerHandEmptyCardSlot"></div>
-                                                <div id="playerHandInfo-CardRightContainer" class="playerHandEmptyCardSlot"></div>`
+                                                <div id="playerHandInfo-CardRightContainer" class="playerHandEmptyCardSlot"></div>
+                                                <div class="targetWhichPlayerModal hidden">
+                                                    <div class="targetModalText"></div>
+                                                    <div class="targetModalBtnsContainer"></div>
+                                                </div>`
         this.parent.playerHandAndInfoContainer.append(playerHandInfoGridContainer);
         this.playerTokens = playerHandInfoGridContainer.getElementsByClassName("playerHandInfo-Tokens")[0];
         this.roundStatus = playerHandInfoGridContainer.getElementsByClassName("playerHandInfo-RoundStatus")[0];
         this.handmaid = playerHandInfoGridContainer.getElementsByClassName("playerHandInfo-Handmaid")[0];
         this.cardLeftContainer = document.getElementById("playerHandInfo-CardLeftContainer");
         this.cardRightContainer = document.getElementById("playerHandInfo-CardRightContainer");
-
+        this.targetWhichPlayerModal = playerHandInfoGridContainer.getElementsByClassName("targetWhichPlayerModal")[0];
         this.leftCard = new Card(this.cardLeftContainer, "empty-pile");
         this.rightCard = new Card(this.cardRightContainer, "empty-pile");
 
-        this.update(playerInfo);
 
-        // addListenersAndAnimations();
     }
 
-    update(playerInfo){
+    update(playerInfo) {
         this.playerTokens.textContent = `Favor tokens: ${playerInfo.favourTokenCount}`;
 
         this.roundStatus.textContent = playerInfo.knockedOutOfRound ? "Round status: Knocked out" : "Round status: Active";;
-        this.handmaid.textContent = playerInfo.handmaid ? "Handmaid: Protected!": "";
+        this.handmaid.textContent = playerInfo.handmaid ? "Handmaid: Protected!" : "";
 
-        if (playerInfo.hand[0]){
+        if (playerInfo.hand[0]) {
             this.leftCard.updateCardVal(playerInfo.hand[0].val);
         } else {
             this.leftCard.updateCardVal("empty-pile");
         }
 
-        if (playerInfo.hand[1]){
+        if (playerInfo.hand[1]) {
             this.rightCard.updateCardVal(playerInfo.hand[1].val);
 
         } else {
             this.rightCard.updateCardVal("empty-pile");
-        }        
+        }
+    }
+
+    attachListeners() {
+
+        const handleCardClick = (e) => {
+            let modal =  this.targetWhichPlayerModal;
+
+            // If not that player's turn, do nothing
+            if (this.parent.currentTurnPlayerID !== this.parent.playerID) {
+                return;
+            };
+
+            const cardVal = parseInt(e.currentTarget.firstChild.dataset.cardVal);
+
+            // Ask player who to target, then we can call playCard!
+            modal.classList.remove("hidden");
+
+            // Change text
+            modal.getElementsByClassName("targetModalText")[0].innerText = `You have chosen to play ${e.currentTarget.firstChild.dataset.cardName}. 
+            Which player will you target?`;
+
+            // Generate btns
+            let btnDiv = modal.getElementsByClassName("targetModalBtnsContainer")[0];
+            btnDiv.innerText = "";
+
+            let moves = this.parent.client.moves;
+            
+            for (const playerID in this.parent.playerMap){
+                const button = document.createElement('button');
+                button.textContent = playerID;
+                button.addEventListener('click', function (e) {
+                    moves.playCard(cardVal, playerID);
+                    modal.classList.add("hidden");
+                });
+                btnDiv.appendChild(button);
+            }
+
+            
+
+            // this.parent.client.moves.playCard(cardVal, targetedPlayerID);
+        };
+
+        this.cardLeftContainer.addEventListener("click", handleCardClick);
+        this.cardRightContainer.addEventListener("click", handleCardClick);
     }
 
 }
+
 
 
 // NOTHING SOLID HERE ATM, JUST TESTING
