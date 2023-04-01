@@ -300,6 +300,9 @@ body,
 }
 
 .targetWhichPlayerModal .targetModalText {
+    margin: 0 0 5px;
+}
+.targetWhichPlayerModal .targetModalSecondaryText {
     margin: 0 0 20px;
 }
 
@@ -317,6 +320,13 @@ body,
 
 .targetWhichPlayerModal button:hover {
     background-color: rgb(46, 0, 0);
+}
+
+.targetWhichPlayerModal button.protectedByHandmaid {
+    cursor: default;
+    background-color: rgb(63, 63, 63);
+    opacity: 0.5;
+
 }
 
 .cardClassImg {

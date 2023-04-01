@@ -123,10 +123,18 @@ function renderPlayCardModalActionButtonsAndText(playedCardVal, modal, parent) {
 
         // Otherwise, render a button for that player
         let label = (playerID === clientID) ? "You" : `Player ${playerID}`;
-        createAndAppendActionButton(playerID, label);
+        let newBtn = createAndAppendActionButton(playerID, label);
 
-        // Add ID to array of targetable players - used to see if we need to render a generic 'play' button
-        targetablePlayers.push(playerID);
+
+        // if that player is protected by handmaid, grey out their button and make it unselectable
+        if (parent.playerMap[playerID].handmaid === true){
+            newBtn.disabled = true;
+            newBtn.classList.add("protectedByHandmaid");
+            newBtn.title = "This player cannot be targeted - protected by Handmaid";
+        } else {
+            // Else, add ID to array of targetable players - used to see if we need to render a generic 'play' button
+            targetablePlayers.push(playerID);
+        }
     }
 
 
@@ -167,6 +175,8 @@ function renderPlayCardModalActionButtonsAndText(playedCardVal, modal, parent) {
         });
     
         btnDiv.appendChild(button);
+
+        return button;
     }
 }
 

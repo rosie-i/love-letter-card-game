@@ -78,6 +78,11 @@ export const LoveLetter = {
                     } else {
                         // Otherwise, draw card to start turn
                         drawCard({ G, playerID: ctx.currentPlayer });
+                        // If they were protected by handmaid from last turn, reset
+                        if (G.playerMap[ctx.currentPlayer].handmaid){
+                            G.playerMap[ctx.currentPlayer].handmaid = false;
+                        }
+
                     }
                 },
 
@@ -199,7 +204,8 @@ function makePlayerMap(ctx) {
         playerMap[playerID] = {
             hand: [],
             knockedOutOfRound: false,
-            favourTokenCount: 0
+            favourTokenCount: 0,
+            handmaid: false
         }
 
     }
@@ -221,6 +227,7 @@ function dealStartingHands(playerMap, drawPile) {
 function resetPlayerRoundInfo(playerMap) {
     for (const playerID in playerMap) {
         playerMap[playerID].knockedOutOfRound = false;
+        playerMap[playerID].handmaid = false;
     }
 }
 
@@ -436,6 +443,12 @@ function knockPlayerOut(G, playerID) {
 
 function resolveCardEffects(G, cardVal, playerID, targetedPlayerID) {
 
+    // TO IMPLEMENT:
+    // If card requires target and doesn't have one (or otherwise has no effects)
+    // Then just return? e.g. if all players are handmaided, you just 'play' the card with no effect
+    // Which will currently throw an error for most resolve funcs here
+    // So maybe we pass in a cardHasNoEffect parameter too? And just return here if true?
+    // Otherwise we do it card by card... Which might be better? Dunno, depends what we want to render as result to players
 
     switch (cardVal) {
         case 1:
@@ -448,7 +461,7 @@ function resolveCardEffects(G, cardVal, playerID, targetedPlayerID) {
             resolveBaron(G, playerID, targetedPlayerID);
             break;
         case 4:
-            console.log("Card 4 has not yet been implemented");
+            resolveHandmaid(G, playerID);
             break;
         case 5:
             console.log("Card 5 has not yet been implemented");
@@ -510,7 +523,30 @@ function resolveBaron(G, playerID, targetedPlayerID) {
 
 }
 
-function resolveHandmaid() {
+function resolveHandmaid(G, playerID) {
+    // Until the start of your next turn,
+    // other players cannot choose you
+    // for their card effects.
+
+    // In the rare case that all other players still in
+    // the round are “protected” by a Handmaid when
+    // you play a card, do the following:
+    // ❧ If that card requires you to choose another
+    // player (Guard, Priest, Baron, King), your
+    // card is played with no effect.
+    // ❧ If that card requires you to choose any
+    // player (Prince), then you must choose
+    // yourself for the effect.
+
+
+    // TODO 
+    // Set player status to protected
+    G.playerMap[playerID].handmaid = true;
+
+    // Additionally, at start of player's turn (in onBegin hook), if they are protected by handmaid from prev turn, it will be reset to false
+
+    // In the action modal, other players will not be able to select that player as a target
+
 
 }
 
