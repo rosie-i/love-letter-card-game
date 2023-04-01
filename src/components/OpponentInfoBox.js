@@ -4,30 +4,22 @@ class OpponentInfoBox {
     constructor(opponentPlayerID, opponentPlayerMap, parentEl) {
         this.parent = parentEl;
         this.opponentPlayerID = opponentPlayerID;
-        this.opponentPlayerMap = opponentPlayerMap
 
         this.create();
+        this.update(opponentPlayerMap);
     }
 
     create(){
-        let status = this.opponentPlayerMap.knockedOutOfRound ? "Knocked out" : "Active";
 
         const opponentBoxTemplate = document.createElement('div');
         opponentBoxTemplate.innerHTML = `<div class="opponentInfoBox opponent_id_${this.opponentPlayerID}">
                                             <div class="opponentNameDiv">
                                                 Player ID: ${this.opponentPlayerID}
                                             </div>
-                                            <div class="opponentTokens">
-                                                Favor tokens: ${this.opponentPlayerMap.favourTokenCount}
-                                            </div>
-                                            <div class="opponentKnockedOutStatus">
-                                                Round status: ${status}
-                                            </div>
-                                            <div class="opponentHand">
-                                                Cards in hand: ${this.opponentPlayerMap.hand.length}
-                                            </div>
-                                            <div class="opponentHandmaidStatus">
-                                            </div>
+                                            <div class="opponentTokens"></div>
+                                            <div class="opponentKnockedOutStatus"></div>
+                                            <div class="opponentHand"></div>
+                                            <div class="opponentHandmaidStatus"></div>
                                         </div>`;
         this.parent.append(opponentBoxTemplate);
         this.opponentBoxDiv = opponentBoxTemplate;
@@ -41,13 +33,15 @@ class OpponentInfoBox {
         this.handmaidStatusEl = this.opponentBoxDiv.getElementsByClassName("opponentHandmaidStatus")[0];
     }
 
-    update(){
-        // update inner html 
+    update(opponentPlayerMap){
         
-        // this.favourTokenEl.innerHTML = `Favor tokens: ${something we pass in when we update}`;
-        // this.knockedOutStatusEl.innerHTML = ``;
-        // this.handEl.innerHTML = ``;
-        // this.handmaidStatusEl.innerHTML = ``;
+        this.favourTokenEl.textContent = `Favor tokens: ${opponentPlayerMap.favourTokenCount}`;
+        
+        this.knockedOutStatusEl.textContent = opponentPlayerMap.knockedOutOfRound ? "Round status: Knocked out" : "Round status: Active";
+
+        this.handEl.textContent = `# of cards in hand: ${opponentPlayerMap.hand.length}`;
+
+        this.handmaidStatusEl.textContent = opponentPlayerMap.handmaid ? "Handmaid: Protected!" : "Handmaid: Not protected";
 
     }
 

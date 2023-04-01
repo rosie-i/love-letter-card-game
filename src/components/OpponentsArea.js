@@ -34,14 +34,17 @@ class OpponentsArea {
 
     update(state){
 
-        // Get the active player, if it has changed then we'll update the activeplayer CSS
+        // Update active player highlight if changed:
         if (this.activePlayerID !== state.ctx.currentPlayer) {
             this.activePlayerID = state.ctx.currentPlayer;
             highlightActivePlayer(this.activePlayerID, this.opponentInfoBoxes);
         }
-        // this.activePlayer
-        // add playerActiveHighlight class to current player
-        // and remove from all others
+
+        // Update each player info box
+        for (const opponent of this.opponentInfoBoxes){
+            let opponentID = opponent.opponentPlayerID;
+            opponent.update(state.G.playerMap[opponentID]);
+        }
         
 
     }

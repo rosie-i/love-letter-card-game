@@ -44,16 +44,12 @@ class PlayerHandInfoArea {
 
     update(playerInfo, isActivePlayer) {
 
-
-
         updateActivePlayerHighlight(isActivePlayer, this.playerHandInner);
         
-
-
         this.playerTokens.textContent = `Favor tokens: ${playerInfo.favourTokenCount}`;
 
         this.roundStatus.textContent = playerInfo.knockedOutOfRound ? "Round status: Knocked out" : "Round status: Active";;
-        this.handmaid.textContent = playerInfo.handmaid ? "Handmaid: Protected!" : "";
+        this.handmaid.textContent = playerInfo.handmaid ? "Handmaid: Protected!" : "Handmaid: Not protected";
 
         if (playerInfo.hand[0]) {
             this.leftCard.updateCardVal(playerInfo.hand[0].val);
