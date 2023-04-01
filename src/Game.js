@@ -406,8 +406,14 @@ function playCard(obj, cardVal, targetedPlayerID) {
 
 // This func should only ever need to be called when a player has one card in hand
 function discardHand(G, playerID) {
+
     // Remove selected card from their hand
     let hand = G.playerMap[playerID].hand;
+
+    if (hand.length !== 1){
+        console.log("!! Discard hand called when player did not have exactly 1 card in hand! - only intended to be called with one card in hand, if you see this it might be causing bugs");
+    }
+
     let discardedCard = hand.pop();
 
     // Add to discard pile
@@ -424,14 +430,17 @@ function discardHand(G, playerID) {
     if (hand.length > 0) {
         throw new Error("Player should never have more than one card in hand when discarding card");
     }
+
 }
 
 function knockPlayerOut(G, playerID) {
     // Set status
     G.playerMap[playerID].knockedOutOfRound = true;
 
-    // Discard their hand
-    discardHand(G, playerID);
+    // Discard their hand, if they still have any cards in it
+    if (G.playerMap[playerID].hand.length > 0){
+        discardHand(G, playerID);
+    }
 
     // Add to game log
     G.gameLog.push({ playerID: playerID, action: "knocked out" });
@@ -464,7 +473,7 @@ function resolveCardEffects(G, cardVal, playerID, targetedPlayerID) {
             resolveHandmaid(G, playerID);
             break;
         case 5:
-            console.log("Card 5 has not yet been implemented");
+            resolvePrince(G, targetedPlayerID);
             break;
         case 6:
             resolveKing(G, playerID, targetedPlayerID);
@@ -473,7 +482,7 @@ function resolveCardEffects(G, cardVal, playerID, targetedPlayerID) {
             resolveCountess();
             break;
         case 8:
-            console.log("Card 8 has not yet been implemented");
+            resolvePrincess(G, playerID);
             break;
         default:
             console.log("Invalid card num played");
@@ -550,7 +559,36 @@ function resolveHandmaid(G, playerID) {
 
 }
 
-function resolvePrince() {
+function resolvePrince(G, targetedPlayerID) {
+
+    let discardedCardVal = G.playerMap[targetedPlayerID].hand[0].val;
+
+    // Targeted player discards hand, without resolving effects
+    discardHand(G, targetedPlayerID);
+
+    // If they discarded the princess, they are knocked out immediately
+    if (discardedCardVal === 8){
+        knockPlayerOut(G, targetedPlayerID);
+    } else {
+        // They draw new hand if not knocked out
+        if (G.drawPile.length > 0){
+            drawCard({G, playerID: targetedPlayerID});
+        } 
+        
+        // If the deck is empty,the chosen player draws the facedown set-aside card from start of game
+        else {
+            let setAsideCard = G.discardPile.shift();
+            
+            G.playerMap[targetedPlayerID].hand.push(setAsideCard);
+            G.gameLog.push({
+                action: "game info",
+                msg: "Deck is empty - player draws the facedown set-aside card from the discard pile"
+            });
+        }
+
+
+    }
+
 
 }
 
@@ -570,6 +608,7 @@ function resolveCountess() {
     // --> Logic implemented in UI to stop other card being selected when Countess must be played
 }
 
-function resolvePrincess() {
-
+function resolvePrincess(G, playerID) {
+    // Player is knocked out
+    knockPlayerOut(G, playerID);
 }

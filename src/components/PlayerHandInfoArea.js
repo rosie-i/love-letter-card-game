@@ -110,8 +110,7 @@ function renderPlayCardModalActionButtonsAndText(playedCardVal, modal, parent) {
     let targetablePlayers = [];
 
     if (triedToPlayKingOrPrinceWithCountessInHand(playedCardVal, parent.playerHandInfoArea.cardsInHand)){
-        modal.getElementsByClassName("targetModalText")[0].innerText = `You must play the Countess when you
-        also have a ${CARD_INFO.cardNames[playedCardVal]} in your hand.`;
+        modal.getElementsByClassName("targetModalText")[0].innerText = `You must play the Countess when you also have a ${CARD_INFO.cardNames[playedCardVal]} in your hand.`;
         modal.getElementsByClassName("targetModalSecondaryText")[0].innerText = "";
         return;
     }
