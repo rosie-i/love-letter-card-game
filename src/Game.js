@@ -470,7 +470,7 @@ function resolveCardEffects(G, cardVal, playerID, targetedPlayerID) {
             resolveKing(G, playerID, targetedPlayerID);
             break;
         case 7:
-            console.log("Card 7 has not yet been implemented");
+            resolveCountess();
             break;
         case 8:
             console.log("Card 8 has not yet been implemented");
@@ -566,7 +566,8 @@ function resolveKing(G, playerID, targetedPlayerID) {
 }
 
 function resolveCountess() {
-
+    // Card has no effect, but must be played if other card is King or Prince
+    // --> Logic implemented in UI to stop other card being selected when Countess must be played
 }
 
 function resolvePrincess() {

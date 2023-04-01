@@ -5,6 +5,7 @@ class PlayerHandInfoArea {
     constructor(parent, playerInfo) {
         this.parent = parent;
         this.clientPlayerID = parent.playerID;
+        this.cardsInHand = [];
 
         this.create();
         this.update(playerInfo);
@@ -66,6 +67,10 @@ class PlayerHandInfoArea {
         } else {
             this.rightCard.updateCardVal("empty-pile");
         }
+
+        if (this.cardsInHand !== playerInfo.hand){
+            this.cardsInHand = playerInfo.hand;
+        }
     }
 
     attachListeners() {
@@ -96,12 +101,20 @@ class PlayerHandInfoArea {
 
 function renderPlayCardModalActionButtonsAndText(playedCardVal, modal, parent) {
 
+
     let btnDiv = modal.getElementsByClassName("targetModalBtnsContainer")[0];
     btnDiv.innerText = "";
 
     let moves = parent.client.moves;
     let clientID = parent.playerID;
     let targetablePlayers = [];
+
+    if (triedToPlayKingOrPrinceWithCountessInHand(playedCardVal, parent.playerHandInfoArea.cardsInHand)){
+        modal.getElementsByClassName("targetModalText")[0].innerText = `You must play the Countess when you
+        also have a ${CARD_INFO.cardNames[playedCardVal]} in your hand.`;
+        modal.getElementsByClassName("targetModalSecondaryText")[0].innerText = "";
+        return;
+    }
 
     // Iterate over all players to check whether to create target buttons
     for (const playerID in parent.playerMap) {
@@ -178,6 +191,20 @@ function renderPlayCardModalActionButtonsAndText(playedCardVal, modal, parent) {
 
         return button;
     }
+}
+
+function triedToPlayKingOrPrinceWithCountessInHand(playedCardVal, playerHand){
+
+    if (playedCardVal === 5 || playedCardVal === 6){
+        // Check to see if their hand contains countess
+        for (const card of playerHand){
+            if (card.val === 7){
+                return true;
+            }
+        }
+    }
+
+    return false;
 }
 
 
