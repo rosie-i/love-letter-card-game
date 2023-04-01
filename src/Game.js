@@ -467,7 +467,7 @@ function resolveCardEffects(G, cardVal, playerID, targetedPlayerID) {
             console.log("Card 5 has not yet been implemented");
             break;
         case 6:
-            console.log("Card 6 has not yet been implemented");
+            resolveKing(G, playerID, targetedPlayerID);
             break;
         case 7:
             console.log("Card 7 has not yet been implemented");
@@ -554,8 +554,15 @@ function resolvePrince() {
 
 }
 
-function resolveKing() {
+function resolveKing(G, playerID, targetedPlayerID) {
 
+    // Swap hands of the two players
+    [G.playerMap[playerID].hand, G.playerMap[targetedPlayerID].hand] = [G.playerMap[targetedPlayerID].hand, G.playerMap[playerID].hand];
+
+    G.gameLog.push({
+        action: "game info",
+        msg: "King played - Players swapped hands"
+    });
 }
 
 function resolveCountess() {

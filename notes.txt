@@ -36,3 +36,23 @@ Additional feature thoughts:
 - Keyboard shortcuts!
 - Game log - assign colour for each player and highlight their names in log
 - Animations! Smooooth transitions.
+
+
+TODO:
+
+- When deck is empty, show the empty pile img instead of card back
+- When it is not your turn, card hover/click state shouldn't respond
+
+- Modal should show you result of playing your card
+-- Should also show other players, but might be more complicated... Ideas:
+-- (Though could have a G.moveOutcome obj which is replaced when playCard is called + resolved)
+-- Should have moveOutcome.seenBy[playerID] = false;
+-- Then when clients get a state update, update their UI (if they have not seen it) and set seenBy them to true
+-- Then can just replace it every time we make a new move
+
+- Be nice to implement a new round countdown, make it more obvious when round is over
+--- in roundScoreAndCleanup phase onBegin hook - in else block
+                else {
+                    // Start next round - ADD SOME VISUAL FEEDBACK WITH A 'Next round beginning in 3... 2... 1... ' TIMER HERE!
+                    events.setPhase('roundPlay');
+                }
