@@ -1,8 +1,10 @@
 import Card from "./Card";
+import { CARD_INFO } from "../CardInfo";
 
 class PlayerHandInfoArea {
     constructor(parent, playerInfo) {
         this.parent = parent;
+        this.clientPlayerID = parent.playerID;
 
         this.create();
         this.update(playerInfo);
@@ -26,6 +28,7 @@ class PlayerHandInfoArea {
                                                 <div id="playerHandInfo-CardRightContainer" class="playerHandEmptyCardSlot"></div>
                                                 <div class="targetWhichPlayerModal hidden">
                                                     <div class="targetModalText"></div>
+                                                    <div class="targetModalSecondaryText"></div>
                                                     <div class="targetModalBtnsContainer"></div>
                                                 </div>`
         this.parent.playerHandAndInfoContainer.append(playerHandInfoGridContainer);
@@ -45,7 +48,7 @@ class PlayerHandInfoArea {
     update(playerInfo, isActivePlayer) {
 
         updateActivePlayerHighlight(isActivePlayer, this.playerHandInner);
-        
+
         this.playerTokens.textContent = `Favor tokens: ${playerInfo.favourTokenCount}`;
 
         this.roundStatus.textContent = playerInfo.knockedOutOfRound ? "Round status: Knocked out" : "Round status: Active";;
@@ -68,10 +71,10 @@ class PlayerHandInfoArea {
     attachListeners() {
 
         const handleCardClick = (e) => {
-            let modal =  this.targetWhichPlayerModal;
+            let modal = this.targetWhichPlayerModal;
 
             // If not that player's turn, do nothing
-            if (this.parent.currentTurnPlayerID !== this.parent.playerID) {
+            if (this.parent.currentTurnPlayerID !== this.clientPlayerID) {
                 return;
             };
 
@@ -80,29 +83,9 @@ class PlayerHandInfoArea {
             // Ask player who to target, then we can call playCard!
             modal.classList.remove("hidden");
 
-            // Change text
-            modal.getElementsByClassName("targetModalText")[0].innerText = `You have chosen to play ${e.currentTarget.firstChild.dataset.cardName}. 
-            Which player will you target?`;
+            // Generate btns and change text
+            renderPlayCardModalActionButtonsAndText(cardVal, modal, this.parent);
 
-            // Generate btns
-            let btnDiv = modal.getElementsByClassName("targetModalBtnsContainer")[0];
-            btnDiv.innerText = "";
-
-            let moves = this.parent.client.moves;
-            
-            for (const playerID in this.parent.playerMap){
-                const button = document.createElement('button');
-                button.textContent = playerID;
-                button.addEventListener('click', function (e) {
-                    moves.playCard(cardVal, playerID);
-                    modal.classList.add("hidden");
-                });
-                btnDiv.appendChild(button);
-            }
-
-            
-
-            // this.parent.client.moves.playCard(cardVal, targetedPlayerID);
         };
 
         this.cardLeftContainer.addEventListener("click", handleCardClick);
@@ -111,10 +94,87 @@ class PlayerHandInfoArea {
 
 }
 
+function renderPlayCardModalActionButtonsAndText(playedCardVal, modal, parent) {
 
-function updateActivePlayerHighlight(isActivePlayer, div){
+    let btnDiv = modal.getElementsByClassName("targetModalBtnsContainer")[0];
+    btnDiv.innerText = "";
 
-    if (isActivePlayer){
+    let moves = parent.client.moves;
+    let clientID = parent.playerID;
+    let targetablePlayers = [];
+
+    // Iterate over all players to check whether to create target buttons
+    for (const playerID in parent.playerMap) {
+
+        // Skip 'You' button if you cannot target self with played card
+        if (playerID === clientID && !CARD_INFO.canTargetPlayedCardAtSelf[playedCardVal]) {
+            continue;
+        }
+
+        // Skip other player buttons if you cannot target others with played card
+        if (playerID !== clientID && !CARD_INFO.canTargetPlayedCardAtOtherPlayers[playedCardVal]) {
+            continue;
+        }
+
+        // Skip player button if they have been knocked out
+        if (parent.playerMap[playerID].knockedOutOfRound) {
+            continue;
+        }
+
+        // Otherwise, render a button for that player
+        let label = (playerID === clientID) ? "You" : `Player ${playerID}`;
+        createAndAppendActionButton(playerID, label);
+
+        // Add ID to array of targetable players - used to see if we need to render a generic 'play' button
+        targetablePlayers.push(playerID);
+    }
+
+
+    let modalText = `You are about to play ${CARD_INFO.cardNames[playedCardVal]}.`;
+    let modalSecondaryText = "Which player will you target?";
+
+
+    // If there are no playable buttons/targetable players after that, you need to render a simple 'Play' button
+    if (!targetablePlayers.length) {
+
+        createAndAppendActionButton(null, "Play");
+
+        // And change secondary text as no targets
+        modalSecondaryText = "";
+    }
+
+
+    // TO IMPLEMENT: Grey out opponent button if handmaided? Or just totally hide?
+    // If grey, we'll have to render the separate 'play' btn
+
+    // Change text
+    modal.getElementsByClassName("targetModalText")[0].innerText = modalText;
+    modal.getElementsByClassName("targetModalSecondaryText")[0].innerText = modalSecondaryText;
+
+
+
+
+
+    // --- Helper function for creating modal buttons
+    function createAndAppendActionButton(targetPlayerID, label) {
+        const button = document.createElement('button');
+        button.textContent = label;
+        button.dataset.targetPlayerID = targetPlayerID;
+    
+        button.addEventListener('click', (e) => {
+            moves.playCard(playedCardVal, targetPlayerID);
+            modal.classList.add("hidden");
+        });
+    
+        btnDiv.appendChild(button);
+    }
+}
+
+
+
+function updateActivePlayerHighlight(isActivePlayer, div) {
+
+    if (isActivePlayer) {
         div.classList.add("playerActiveHighlight");
     } else {
         div.classList.remove("playerActiveHighlight");

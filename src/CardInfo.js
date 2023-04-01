@@ -24,6 +24,28 @@ const CARD_INFO = {
         8: 1
     },
 
+    canTargetPlayedCardAtSelf: {
+        1: false,
+        2: false,
+        3: false,
+        4: true,
+        5: true,
+        6: false,
+        7: false,
+        8: false
+    },
+
+    canTargetPlayedCardAtOtherPlayers: {
+        1: true,
+        2: true,
+        3: true,
+        4: false,
+        5: true,
+        6: true,
+        7: false,
+        8: false
+    },
+
     // Might want to change later if implementing V2 of Love Letter with Spy + Chancellor cards
     highestCardValue: 8
 }
