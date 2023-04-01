@@ -1,4 +1,5 @@
 import { CARD_INFO } from "./CardInfo";
+import { GAME_INFO } from "./GameInfo";
 import { INVALID_MOVE } from 'boardgame.io/core';
 
 
@@ -7,9 +8,6 @@ export const LoveLetter = {
     setup: ({ ctx }) => {
 
         // Create empty card piles - deck, etc will be created in roundplay phase setup hook
-        let drawPile = [];
-        let discardPile = [];
-        let playedPile = [];
 
         // Make map of the players - hands, round status, favour token
         let playerMap = makePlayerMap(ctx);
@@ -17,11 +15,13 @@ export const LoveLetter = {
 
         // Initial state for G object
         return {
-            drawPile: drawPile,
-            discardPile: discardPile,
-            playedPile: playedPile,
+            drawPile: [],
+            discardPile: [],
+            playedPile: [],
             playerMap: playerMap,
-            gameLog: []
+            gameLog: [],
+            roundNumber: 0,
+            winnerOfLastRound: null
         }
     },
 
@@ -33,9 +33,13 @@ export const LoveLetter = {
             // game mechanics once all players have joined the room?
             start: true,
 
+            next: 'roundScoreAndCleanup',
+
             // NOTE - on begin hooks only run on server, not client
             // Phase setup hook: create + shuffle deck, deal starting card, set start player
             onBegin: ({ G, ctx, random }) => {
+
+                G.roundNumber++;
 
                 G.drawPile = makeDeck();
                 G.drawPile = random.Shuffle(G.drawPile);
@@ -49,6 +53,12 @@ export const LoveLetter = {
 
                 // TO IMPLEMENT - SET THE STARTING PLAYER - (last round winner, or random player if 1st round)
 
+                // ROSIE IMP!! Log that we are starting a round and which player is starting!
+                // Add to game log
+                G.gameLog.push({
+                    action: "game info",
+                    msg: `Starting round number ${G.roundNumber}: Player XXX goes first`
+                });
             },
 
             moves: { playCard },
@@ -63,6 +73,7 @@ export const LoveLetter = {
                 onBegin: ({ G, ctx, events }) => {
                     // Check if player knocked out - if yes, end their turn automatically
                     if (G.playerMap[ctx.currentPlayer].knockedOutOfRound) {
+                        console.log(`Player ${ctx.currentPlayer} is already knocked out of round, skipping their turn`);
                         events.endTurn();
                     } else {
                         // Otherwise, draw card to start turn
@@ -70,58 +81,47 @@ export const LoveLetter = {
                     }
                 },
 
-                // Ok, I don't think stages are very useful in this way
-                // Might be useful for moving players who are being 'attacked' into a phase where they can do something...
-                // Although they can't actually really do anything, like they don't have to make any decisions
-                // So probs not actually necessary
-                // stages: {
-                //     playCard: {
-                //         // Players selects which card to play, remove it from their hand and put it on play pile
-                //         onBegin: ({ G, ctx }) => {
-                //             console.log("xxx playcard onbegin");
-                //         },
-                //         next: 'chooseTarget'
-                //     },
-                //     chooseTarget: {
-                //         // Not always required, depends on card played
-                //         onBegin: ({ G, ctx }) => {
-                //             console.log("xxxxx choosetarget on begin");
-                //         },
-                //     },
-                //     resolveCardEffects: {
-                //         // e.g. Reveal card, compare hands, knock players out, etc.
-                //     }
-                // }
+                // onEnd of player turn hook - check if round should end (draw pile empty or one active player remaining)
+                onEnd: ({ G, events }) => {
+
+                    if (isOnlyOneActivePlayer(G.playerMap) || G.drawPile.length === 0) {
+                        // We should move to roundScoring phase
+                        events.setPhase('roundScoreAndCleanup');
+                    }
+
+                }
 
 
-
-
-
-                // IMPLEMENT ONEND HOOK - check if round should end (deck empty/only one player left in). 
-                // If not, carry on to next player's turn
-                // If yes, move to roundScoring phase
             }
 
         },
 
-        roundScoring: {
+        roundScoreAndCleanup: {
             // All remaining active players reveal their cards
             // The one(s) with the highest card get a token 
             // Most recent winner is saved in G (randomise winner if multiple)
+            // Cleanup - remove cards from hands + card piles
+            // Check if game should end
+            // If not, start a new round
+
+            onBegin: ({ G, events }) => {
+
+                scoreRoundAndAwardTokens(G, getActivePlayerIDs(G.playerMap));
+
+                roundCleanup(G);
+
+                let winners = getPlayerIDsMeetingWinConditions(G);
+
+                if (winners.length > 0){
+                    events.endGame({winningPlayerIDs: winners});
+                } else {
+                    // Start next round
+                    events.setPhase('roundPlay');
+                }
+
+            },
 
 
-        },
-
-        roundCleanup: {
-            // Remove cards from player hands, discard, and played pile.
-
-            // ON END HOOK - Check if a player has enough tokens, then go to end of game if so. 
-            // (This could also be at end of roundscoring?) - but just thinking it's neater to always clear hands etc
-
-        },
-
-        endOfGame: {
-            // Winner is displayed, any options to replay, etc. are shown
         }
     },
 
@@ -224,6 +224,107 @@ function resetPlayerRoundInfo(playerMap) {
     }
 }
 
+function isOnlyOneActivePlayer(playerMap){
+    let activePlayers = getActivePlayerIDs(playerMap);
+
+    // In case there are no active players, may be helpful to have this debug msg logged
+    if (activePlayers.length === 0) {
+        console.log("Num of active players calculated as:", activePlayers);
+        console.log("This may be a bug, would expect there to be at least one when calling this function");
+    }
+    
+    return (activePlayers.length === 1);
+}
+
+function getActivePlayerIDs(playerMap) {
+    let activePlayerIDs = [];
+
+    for (const playerID in playerMap){
+        if(!playerMap[playerID].knockedOutOfRound){
+            activePlayerIDs.push(playerID);
+        }
+    }
+
+    return activePlayerIDs;
+
+}
+
+function scoreRoundAndAwardTokens(G, activePlayerIDs){
+    // Get all winning players
+    let winningPlayerIDs = getRoundWinningPlayerIDs(G, activePlayerIDs);
+
+    // Give each winning player a token
+    winningPlayerIDs.forEach((id) => {
+        G.playerMap[id].favourTokenCount++;
+    });
+
+    // Set winner in game hist - this randomly picks one (to start next round) if there is a tie
+    G.winnerOfLastRound = winningPlayerIDs[Math.floor(Math.random()*winningPlayerIDs.length)];
+
+    // Log the player(s) who won the round and their card
+    G.gameLog.push({
+        action: "round score info",
+        winningCardVal: G.playerMap[G.winnerOfLastRound].hand[0].val,
+        winningPlayerIDs: winningPlayerIDs
+    });
+
+
+
+}
+
+function getRoundWinningPlayerIDs(G, activePlayerIDs) {
+
+    // Iterate over hands
+    let highestCardSeen = 0;
+    let winningPlayerIDs = [];
+
+    for (const playerID of activePlayerIDs) {
+
+        let playerCardVal = G.playerMap[playerID].hand[0].val;
+        // If that card val is higher than the previously seen, reset winning playersID to be just this player
+        // And update highest card seen
+        if (playerCardVal > highestCardSeen){
+            winningPlayerIDs = [playerID];
+            highestCardSeen = playerCardVal;
+        }
+
+        // If it's the same as highest, add them to winning playerIDs
+        else if (playerCardVal === highestCardSeen){
+            winningPlayerIDs.push(playerID);
+        }
+        // If it's lower, do nothing, they haven't won
+    }
+
+    return winningPlayerIDs;
+
+}
+
+function roundCleanup(G){
+    // Remove cards from hands + card piles
+    for (const playerID in G.playerMap){
+        G.playerMap[playerID].hand = [];
+    }
+
+    // Empty card piles
+    G.drawPile = [];
+    G.discardPile = [];
+    G.playedPile = [];
+
+}
+
+function getPlayerIDsMeetingWinConditions(G){
+    // Iterate over player map, check if winning token count has been reached
+    let winningPlayerIDs = [];
+
+    for (const playerID in G.playerMap){
+        if (G.playerMap[playerID] >= GAME_INFO.tokensRequiredForWin){
+            winningPlayerIDs.push(playerID);
+        }
+    }
+
+    return winningPlayerIDs;
+
+}
 
 
 // -------------- GAME MOVE HELPER FUNCTIONS ---------------
@@ -231,7 +332,7 @@ function resetPlayerRoundInfo(playerMap) {
 function drawCard({ G, playerID }) {
 
     if (G.drawPile.length <= 0) {
-        console.log("INVALID MOVE: Draw pile is already empty, cannot draw card!");
+        console.log("INVALID MOVE: Draw pile is already empty, cannot draw card! Player trying to draw:", playerID);
         return INVALID_MOVE;
     }
 
@@ -247,16 +348,13 @@ function drawCard({ G, playerID }) {
     hand.push(drawn);
 
     // Add to game log
-    const logEntry = {
+    G.gameLog.push({
         playerID: playerID,
         action: "drew",
         cardVal: drawn.val
-    };
-
-    G.gameLog.push(logEntry);
+    });
 }
 
-// Need to add targetted player parameter to see who the card is being played against
 function playCard(obj, cardVal, targetedPlayerID) {
 
     let G = obj.G;
@@ -285,20 +383,58 @@ function playCard(obj, cardVal, targetedPlayerID) {
 
 
     // Add to game log 
-    const logEntry = {
+    G.gameLog.push({
         playerID: obj.ctx.currentPlayer,
         action: "played",
         cardVal: cardVal,
         targetedPlayerID: targetedPlayerID
-    };
-
-    G.gameLog.push(logEntry);
+    });
 
     // IMPLEMENT - ACTION THE EFFECTS OF THE CARD
-    resolveCardEffects(G, cardVal, targetedPlayerID);
+    resolveCardEffects(G, cardVal, playerID, targetedPlayerID);
+
 }
 
-function resolveCardEffects(G, cardVal, targetedPlayerID) {
+// -------------- Player status/hand helper functions ---------------
+
+// This func should only ever need to be called when a player has one card in hand
+function discardHand(G, playerID) {
+    // Remove selected card from their hand
+    let hand = G.playerMap[playerID].hand;
+    let discardedCard = hand.pop();
+
+    // Add to discard pile
+    G.discardPile.push(discardedCard);
+
+    // Add to game log
+    G.gameLog.push({
+        playerID: playerID,
+        action: "discarded",
+        cardVal: discardedCard.val
+    });
+
+    // If they still have any cards in their hand, some logic is off
+    if (hand.length > 0) {
+        throw new Error("Player should never have more than one card in hand when discarding card");
+    }
+}
+
+function knockPlayerOut(G, playerID) {
+    // Set status
+    G.playerMap[playerID].knockedOutOfRound = true;
+
+    // Discard their hand
+    discardHand(G, playerID);
+
+    // Add to game log
+    G.gameLog.push({ playerID: playerID, action: "knocked out" });
+
+}
+
+
+// ---------- Specific card effect helper functions
+
+function resolveCardEffects(G, cardVal, playerID, targetedPlayerID) {
 
 
     switch (cardVal) {
@@ -309,7 +445,7 @@ function resolveCardEffects(G, cardVal, targetedPlayerID) {
             console.log("Card 2 has not yet been implemented");
             break;
         case 3:
-            console.log("Card 3 has not yet been implemented");
+            resolveBaron(G, playerID, targetedPlayerID);
             break;
         case 4:
             console.log("Card 4 has not yet been implemented");
@@ -340,7 +476,37 @@ function resolvePriest() {
 
 }
 
-function resolveBaron() {
+function resolveBaron(G, playerID, targetedPlayerID) {
+
+    // Choose another player. You and that player secretly compare your hands. 
+    // Whoever has the lowervalue card is out of the round.
+    // If there is a tie, neither player is out of the round
+
+    let playerCardVal = G.playerMap[playerID].hand[0].val;
+    let opponentCardVal = G.playerMap[targetedPlayerID].hand[0].val;
+
+    if (typeof playerCardVal !== "number" || typeof opponentCardVal !== "number") {
+        throw new Error("Baron - values compared were not both of type number. playerCardVal:", playerCardVal, " | opponentCardVal:", opponentCardVal);
+    }
+
+
+    if (playerCardVal < opponentCardVal) {
+        // Knock out playerID
+        knockPlayerOut(G, playerID);
+    }
+    else if (opponentCardVal < playerCardVal) {
+        // Knock out opponent
+        knockPlayerOut(G, targetedPlayerID);
+
+    }
+    else {
+        // Val is the same, nobody is knocked out
+        // Send log message I guess
+        G.gameLog.push({
+            action: "game info",
+            msg: "Baron result: Card values were equal - neither player is knocked out"
+        });
+    }
 
 }
 

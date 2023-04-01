@@ -26,9 +26,6 @@ const CARD_INFO = {
 
     // Might want to change later if implementing V2 of Love Letter with Spy + Chancellor cards
     highestCardValue: 8
-
-
-
 }
 
 export { CARD_INFO };

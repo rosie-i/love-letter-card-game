@@ -43,6 +43,8 @@ class GameLogInfoArea {
         logEntry.innerHTML = createLog(logObj);
         logEntry.id = "logMsgID-" + logID;
         this.container.appendChild(logEntry);
+        // scroll to the bottom of the gamelog
+        this.container.scrollTop = this.container.scrollHeight;
     }
 
 }
@@ -60,10 +62,42 @@ function createLog(logObj){
         return `<span class="logMsgHighlightPlayerID-${logObj.playerID}">Player ${logObj.playerID}</span> played card ${logObj.cardVal} on <span class="logMsgHighlightPlayerID-${logObj.targetedPlayerID}">Player ${logObj.targetedPlayerID}</span>`;
     }
 
+    else if (logObj.action === "discarded"){
+        return `<span class="logMsgHighlightPlayerID-${logObj.playerID}">Player ${logObj.playerID}</span> discarded card ${logObj.cardVal}`;
+    }
+
+    else if (logObj.action === "knocked out"){
+        return `<span class="logMsgHighlightPlayerID-${logObj.playerID}">Player ${logObj.playerID}</span> is knocked out of this round`;
+    }
+
+    else if (logObj.action === "game info"){
+        return `${logObj.msg}`;
+    }
+
+    else if (logObj.action === "round score info"){
+        let log = `Round over: Highest card value = ${logObj.winningCardVal}. 
+        1 Favor Token awarded to: <span class="logMsgHighlightPlayerID-${logObj.winningPlayerIDs[0]}">Player ${logObj.winningPlayerIDs[0]}</span>`;
+
+        // If >1 winners, add them to msg
+        for (let i = 1; i < logObj.winningPlayerIDs.length; i++) {
+            const playerID = logObj.winningPlayerIDs[i];
+            log += ` & <span class="logMsgHighlightPlayerID-${logObj.winningPlayerIDs[playerID]}">Player ${logObj.winningPlayerIDs[playerID]}`;
+        }
+
+        return log;
+    }
+
     else {
-        throw new Error("I don't know what the log obj action type is!!!");
+        throw new Error("Log object action type has not been implemented in GameLogArea createLog func");
     }
 
 }
+// msg: `Favor tokens awarded to: Round over: Highest card value was ${G.playerMap[G.winnerOfLastRound].hand[0].val}`
+
+// G.gameLog.push({
+//     action: "round score info",
+//     winningCardVal: G.playerMap[G.winnerOfLastRound].hand[0].val,
+//     winningPlayerIDs: winningPlayerIDs
+// });
 
 export default GameLogInfoArea;
