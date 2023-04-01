@@ -56,3 +56,9 @@ TODO:
                     // Start next round - ADD SOME VISUAL FEEDBACK WITH A 'Next round beginning in 3... 2... 1... ' TIMER HERE!
                     events.setPhase('roundPlay');
                 }
+
+*** NEXT!
+-  If card does not have target (bc Handmaid or whatever) when it should, resolve that in card effect function in Game.js! 
+----> It's causing errors bc i'm calling things like G.playerMap[**undefinedID passed through**].hand
+
+- Implement modal to show card playing result - specifically bc you need it for Priest to be implemented!

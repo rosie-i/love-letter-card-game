@@ -29,6 +29,18 @@ class PlayerHandInfoArea {
                                                 <div id="playerHandInfo-CardRightContainer" class="playerHandEmptyCardSlot"></div>
                                                 <div class="targetWhichPlayerModal hidden">
                                                     <div class="targetModalText"></div>
+                                                    <div class="targetModalGuardDiv hidden">
+                                                    Guess: 
+                                                        <select class="targetModalGuardDropdownSelector">
+                                                            <option value="2">2. Priest </option>
+                                                            <option value="3">3. Baron </option>
+                                                            <option value="4">4. Handmaid </option>
+                                                            <option value="5">5. Prince </option>
+                                                            <option value="6">6. King </option>
+                                                            <option value="7">7. Countess </option>
+                                                            <option value="8">8. Princess </option>
+                                                        </select>
+                                                    </div>
                                                     <div class="targetModalSecondaryText"></div>
                                                     <div class="targetModalBtnsContainer"></div>
                                                 </div>`
@@ -103,7 +115,11 @@ function renderPlayCardModalActionButtonsAndText(playedCardVal, modal, parent) {
 
 
     let btnDiv = modal.getElementsByClassName("targetModalBtnsContainer")[0];
+    let guardDiv = modal.querySelector(".targetModalGuardDiv");
+
     btnDiv.innerText = "";
+    guardDiv.classList.add("hidden");
+
 
     let moves = parent.client.moves;
     let clientID = parent.playerID;
@@ -114,6 +130,12 @@ function renderPlayCardModalActionButtonsAndText(playedCardVal, modal, parent) {
         modal.getElementsByClassName("targetModalSecondaryText")[0].innerText = "";
         return;
     }
+
+    // If Guard, show drop down menu
+    if (playedCardVal === 1){
+        guardDiv.classList.remove("hidden");
+    }
+
 
     // Iterate over all players to check whether to create target buttons
     for (const playerID in parent.playerMap) {
@@ -182,7 +204,11 @@ function renderPlayCardModalActionButtonsAndText(playedCardVal, modal, parent) {
         button.dataset.targetPlayerID = targetPlayerID;
     
         button.addEventListener('click', (e) => {
-            moves.playCard(playedCardVal, targetPlayerID);
+
+            // Get guess from drop down if played card val is 1
+            let guardGuessVal = (playedCardVal === 1) ? parseInt(modal.querySelector(".targetModalGuardDropdownSelector").value) : null;
+            moves.playCard(playedCardVal, targetPlayerID, guardGuessVal);
+
             modal.classList.add("hidden");
         });
     

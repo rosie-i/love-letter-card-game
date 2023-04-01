@@ -303,9 +303,16 @@ body,
     margin: 0 0 5px;
 }
 .targetWhichPlayerModal .targetModalSecondaryText {
-    margin: 0 0 20px;
+    margin: 0 0 15px;
 }
 
+.targetWhichPlayerModal .targetModalGuardDiv {
+    margin: 10px 0 10px;
+}
+
+.targetWhichPlayerModal .targetModalGuardDiv.hidden {
+    display: none;
+}
 
 .targetWhichPlayerModal button {
     margin: 5px;
@@ -328,6 +335,10 @@ body,
     opacity: 0.5;
 
 }
+
+
+
+
 
 .cardClassImg {
     max-width: 100px;

@@ -135,18 +135,8 @@ export const LoveLetter = {
 
     minPlayers: 2,
 
-
-    // endIf is called every time our state updates - this seems unnecessarily often though?
-    // Only required to be called when a round ends...
-    // Unless we should use endif for a round, rather than the whole game?
-    // endIf: ({ G, ctx }) => {
-    //     // In practice this will actually be if a player gets X favor tokens
-    //     // This will actually currently not allow the last player to play their final card either
-    //     if (G.drawPile.length <= 0) {
-    //         return { drawPileEmpty: true };
-    //     }
-    // },
-
+    // Note - AI section hasn't been updated since very beginning of dev
+    // Can't be used in multiplayer, but good chance it doesn't work now anyway I'd say?
     ai: {
         enumerate: (G, ctx) => {
             let moves = [];
@@ -275,8 +265,6 @@ function scoreRoundAndAwardTokens(G, activePlayerIDs){
         winningPlayerIDs: winningPlayerIDs
     });
 
-
-
 }
 
 function getRoundWinningPlayerIDs(G, activePlayerIDs) {
@@ -362,20 +350,12 @@ function drawCard({ G, playerID }) {
     });
 }
 
-function playCard(obj, cardVal, targetedPlayerID) {
+function playCard(obj, cardVal, targetedPlayerID, guardGuessVal) {
 
     let G = obj.G;
     let playerID = obj.playerID;
 
     let hand = G.playerMap[playerID].hand;
-
-    // No longer needed? It was only to validate the move, but if you can only select one in your hand on screen then not necessarily required
-    // Though maybe handy to rtn invalid move anyway, just as a safeguard 
-    // // Get values of cards in hand
-    // let handVals = [hand[0].val];
-    // if (hand[1]) {
-    //     handVals.push(hand[1].val);
-    // }
 
     // Remove selected card from their hand
     let playedCard;
@@ -397,8 +377,7 @@ function playCard(obj, cardVal, targetedPlayerID) {
         targetedPlayerID: targetedPlayerID
     });
 
-    // IMPLEMENT - ACTION THE EFFECTS OF THE CARD
-    resolveCardEffects(G, cardVal, playerID, targetedPlayerID);
+    resolveCardEffects(G, cardVal, playerID, targetedPlayerID, guardGuessVal);
 
 }
 
@@ -450,7 +429,7 @@ function knockPlayerOut(G, playerID) {
 
 // ---------- Specific card effect helper functions
 
-function resolveCardEffects(G, cardVal, playerID, targetedPlayerID) {
+function resolveCardEffects(G, cardVal, playerID, targetedPlayerID, guardGuessVal) {
 
     // TO IMPLEMENT:
     // If card requires target and doesn't have one (or otherwise has no effects)
@@ -461,7 +440,7 @@ function resolveCardEffects(G, cardVal, playerID, targetedPlayerID) {
 
     switch (cardVal) {
         case 1:
-            console.log("Card 1 has not yet been implemented");
+            resolveGuard(G, targetedPlayerID, guardGuessVal);
             break;
         case 2:
             console.log("Card 2 has not yet been implemented");
@@ -490,7 +469,28 @@ function resolveCardEffects(G, cardVal, playerID, targetedPlayerID) {
 
 }
 
-function resolveGuard() {
+
+function resolveGuard(G, targetedPlayerID, guardGuessVal) {
+    
+    // Choose another player and name a character other than Guard. If the
+    // chosen player has that card in their hand, they are out of the round.
+
+    let guessedRight = (G.playerMap[targetedPlayerID].hand[0].val === guardGuessVal);
+
+    G.gameLog.push({
+        action: "game info",
+        msg: `Guard played: Card guessed is ${guardGuessVal}`
+    });
+
+    if (guessedRight){
+        knockPlayerOut(G, targetedPlayerID);
+
+    } else {
+        G.gameLog.push({
+            action: "game info",
+            msg: `Guard result: Incorrect guess`
+        });
+    }
 
 }
 
@@ -548,7 +548,6 @@ function resolveHandmaid(G, playerID) {
     // yourself for the effect.
 
 
-    // TODO 
     // Set player status to protected
     G.playerMap[playerID].handmaid = true;
 
