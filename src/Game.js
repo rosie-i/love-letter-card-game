@@ -431,12 +431,16 @@ function knockPlayerOut(G, playerID) {
 
 function resolveCardEffects(G, cardVal, playerID, targetedPlayerID, guardGuessVal) {
 
-    // TO IMPLEMENT:
-    // If card requires target and doesn't have one (or otherwise has no effects)
-    // Then just return? e.g. if all players are handmaided, you just 'play' the card with no effect
-    // Which will currently throw an error for most resolve funcs here
-    // So maybe we pass in a cardHasNoEffect parameter too? And just return here if true?
-    // Otherwise we do it card by card... Which might be better? Dunno, depends what we want to render as result to players
+
+    // Return if card requires target and doesn't have one
+    // e.g. if all players are handmaided, you just 'play' the card with no effect
+    if (!targetedPlayerID && [1, 2, 3, 5, 6].includes(cardVal)){
+        G.gameLog.push({
+            action: "game info",
+            msg: "Card had no effect as there was no target available"
+        });
+        return;
+    }
 
     switch (cardVal) {
         case 1:
